@@ -1,0 +1,51 @@
+services:
+  isaac-lab:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        ISAACSIM_BASE_IMAGE: ${ISAACSIM_BASE_IMAGE:-nvcr.io/nvidia/isaac-sim:5.1.0}
+    image: ${DOCKER_IMAGE:-isaac-ws:5.1.0-lab2.3.2}
+    container_name: ${CONTAINER_NAME:-isaac-ws}
+    gpus: all
+    ipc: host
+    network_mode: host
+    stdin_open: true
+    tty: true
+    shm_size: ${SHM_SIZE:-16gb}
+    working_dir: /workspace/isaac_ws
+    environment:
+      ACCEPT_EULA: ${ACCEPT_EULA:-Y}
+      PRIVACY_CONSENT: ${PRIVACY_CONSENT:-Y}
+      OMNI_KIT_ACCEPT_EULA: ${OMNI_KIT_ACCEPT_EULA:-YES}
+      HEADLESS: ${HEADLESS:-1}
+      DISPLAY: ${DISPLAY:-}
+      NVIDIA_DRIVER_CAPABILITIES: ${NVIDIA_DRIVER_CAPABILITIES:-all}
+      NVIDIA_VISIBLE_DEVICES: ${NVIDIA_VISIBLE_DEVICES:-all}
+      ISAAC_WS_OUTPUT_ROOT: ${ISAAC_WS_OUTPUT_ROOT:-/workspace/isaac_ws/runs}
+      ISAAC_WS_LOG_ROOT: ${ISAAC_WS_LOG_ROOT:-/workspace/isaac_ws/logs}
+      ISAAC_WS_CHECKPOINT_ROOT: ${ISAAC_WS_CHECKPOINT_ROOT:-/workspace/isaac_ws/checkpoints}
+      WANDB_MODE: ${WANDB_MODE:-offline}
+    volumes:
+      - ..:/workspace/isaac_ws
+      - isaac-kit-cache:/isaac-sim/kit/cache
+      - isaac-ov-cache:/root/.cache/ov
+      - isaac-pip-cache:/root/.cache/pip
+      - isaac-gl-cache:/root/.cache/nvidia/GLCache
+      - isaac-compute-cache:/root/.nv/ComputeCache
+      - isaac-logs:/root/.nvidia-omniverse/logs
+      - isaac-carb-logs:/isaac-sim/kit/logs/Kit/Isaac-Sim
+      - isaac-data:/root/.local/share/ov/data
+      - isaac-docs:/root/Documents
+    command: ${CONTAINER_COMMAND:-bash}
+
+volumes:
+  isaac-kit-cache:
+  isaac-pip-cache:
+  isaac-ov-cache:
+  isaac-gl-cache:
+  isaac-compute-cache:
+  isaac-logs:
+  isaac-carb-logs:
+  isaac-data:
+  isaac-docs:

@@ -1,0 +1,7 @@
+name: proprio
+modalities:
+  - joint_positions
+  - joint_velocities
+  - end_effector_pose
+history_length: 1
+normalize: true

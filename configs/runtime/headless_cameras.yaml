@@ -1,0 +1,6 @@
+name: headless_cameras
+headless: true
+device: cuda:0
+enable_cameras: true
+livestream: false
+num_threads: 8

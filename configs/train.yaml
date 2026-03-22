@@ -1,0 +1,31 @@
+defaults:
+  - task: grasp_sphere_shadow_hand
+  - env: palm_up_workspace
+  - robot: franka_shadow_hand
+  - obs: grasp_proprio_contact
+  - action: franka_shadow_hand_delta_pos
+  - reward: grasp_sphere_dense
+  - algo: rsl_rl_ppo
+  - experiment: grasp_bootstrap
+  - runtime: headless
+  - deploy: ros2_shadow_grasp
+  - _self_
+
+project:
+  name: isaac_ws
+  stage: franka_shadow_grasp
+
+run:
+  mode: plan
+  actor: train
+  python_entrypoint: isaac_ws.train
+  container_python: /isaac-sim/python.sh
+  output_root: ${oc.env:ISAAC_WS_OUTPUT_ROOT,${hydra:runtime.cwd}/runs}
+  log_root: ${oc.env:ISAAC_WS_LOG_ROOT,${hydra:runtime.cwd}/logs}
+  checkpoint_root: ${oc.env:ISAAC_WS_CHECKPOINT_ROOT,${hydra:runtime.cwd}/checkpoints}
+
+hydra:
+  job:
+    chdir: false
+  run:
+    dir: ${run.output_root}/${now:%Y-%m-%d}/${task.name}__${env.name}__${robot.name}__${obs.name}__${action.name}__${reward.name}__${algo.name}__${experiment.name}__${runtime.name}__${deploy.name}__s${experiment.seed}/${now:%H-%M-%S}

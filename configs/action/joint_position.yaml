@@ -1,0 +1,4 @@
+name: joint_position
+space: joint_position
+clip: 1.0
+scale: 0.25

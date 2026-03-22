@@ -1,0 +1,6 @@
+name: tabletop
+scene_type: tabletop
+num_envs: 256
+env_spacing: 2.5
+enable_cameras: false
+terrain: plane

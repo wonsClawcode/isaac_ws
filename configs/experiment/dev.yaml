@@ -1,0 +1,8 @@
+name: dev
+description: Low-risk baseline for first integration on the company GPU machine.
+seed: 42
+tags:
+  - bootstrap
+  - dry-run-first
+checkpoint_interval: 100
+video_interval: 250

@@ -1,0 +1,6 @@
+name: headless
+headless: true
+device: cuda:0
+enable_cameras: false
+livestream: false
+num_threads: 8

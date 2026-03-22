@@ -1,0 +1,31 @@
+name: franka_shadow_hand
+asset_usd: assets/robots/franka_shadow_hand/franka_shadow_hand.usd
+assembly:
+  required: true
+  strategy: custom_usd_or_robot_schema_composition
+  source_arm_asset: franka_fr3
+  source_hand_asset: shadow_hand
+  flange_adapter_required: true
+  notes:
+    - Replace the default Franka gripper with a Shadow Hand end-effector.
+    - Match final wrist-to-palm transform with the real adapter geometry.
+arm:
+  dof: 7
+  control_frequency_hz: 60
+  end_effector_frame: shadow_palm
+hand:
+  dof: 24
+  fingertip_frames:
+    - ffdistal
+    - mfdistal
+    - rfdistal
+    - lfdistal
+    - thdistal
+  coupled_tendons_present: true
+dynamics:
+  retune_pd_gains: true
+  reestimate_inertia: true
+ros2:
+  namespace: /franka_shadow
+  joint_state_topic: /franka_shadow/joint_states
+  command_topic: /franka_shadow/joint_commands

@@ -1,0 +1,12 @@
+name: ros2_shadow_grasp
+enabled: false
+policy_format: onnx
+bridge: isaac_ros_or_custom_node
+expected_frequency_hz: 60
+safety:
+  require_e_stop: true
+  enforce_workspace_limit: true
+  enforce_grasp_force_limit: true
+notes:
+  - Match Shadow Hand tendon coupling and joint limits with the real robot.
+  - Validate palm frame and adapter transform before hardware rollout.

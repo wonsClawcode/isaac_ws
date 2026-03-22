@@ -1,0 +1,10 @@
+name: rsl_rl_ppo
+library: rsl_rl
+seed: 42
+steps_per_env: 24
+max_iterations: 1500
+learning_rate: 0.0003
+gamma: 0.99
+lam: 0.95
+clip_range: 0.2
+entropy_coef: 0.01

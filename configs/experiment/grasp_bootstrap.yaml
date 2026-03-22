@@ -1,0 +1,11 @@
+name: grasp_bootstrap
+description: Bootstrap experiment for palm-up sphere grasp with conservative exploration.
+seed: 42
+tags:
+  - franka-shadow
+  - grasp
+  - bootstrap
+checkpoint_interval: 100
+video_interval: 250
+curriculum_stage: fixed_pose
+max_epochs_without_progress: 50

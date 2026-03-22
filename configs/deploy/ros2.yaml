@@ -1,0 +1,8 @@
+name: ros2
+enabled: false
+policy_format: onnx
+bridge: isaac_ros_or_custom_node
+expected_frequency_hz: 60
+notes:
+  - Match observation schema with real robot sensors before enabling.
+  - Add safety supervisor before first hardware rollout.
