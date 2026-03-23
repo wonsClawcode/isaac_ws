@@ -8,11 +8,15 @@ services:
     image: ${DOCKER_IMAGE:-isaac-ws:5.1.0-lab2.3.2}
     container_name: ${CONTAINER_NAME:-isaac-ws}
     gpus: all
+    user: "${HOST_UID:-0}:${HOST_GID:-0}"
     ipc: host
     network_mode: host
     stdin_open: true
     tty: true
     shm_size: ${SHM_SIZE:-16gb}
+    ulimits:
+      memlock: -1
+      stack: 67108864
     working_dir: /workspace/isaac_ws
     environment:
       ACCEPT_EULA: ${ACCEPT_EULA:-Y}
@@ -20,6 +24,7 @@ services:
       OMNI_KIT_ACCEPT_EULA: ${OMNI_KIT_ACCEPT_EULA:-YES}
       HEADLESS: ${HEADLESS:-1}
       DISPLAY: ${DISPLAY:-}
+      ISAAC_WS_GUI: ${ISAAC_WS_GUI:-0}
       NVIDIA_DRIVER_CAPABILITIES: ${NVIDIA_DRIVER_CAPABILITIES:-all}
       NVIDIA_VISIBLE_DEVICES: ${NVIDIA_VISIBLE_DEVICES:-all}
       ISAAC_WS_OUTPUT_ROOT: ${ISAAC_WS_OUTPUT_ROOT:-/workspace/isaac_ws/runs}

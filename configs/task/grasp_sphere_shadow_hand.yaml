@@ -32,6 +32,8 @@ compatibility:
     - franka_shadow_hand
   envs:
     - palm_up_workspace
+    - palm_up_workspace_debug
+    - palm_up_workspace_scaleout
   observations:
     - grasp_proprio_contact
   actions:

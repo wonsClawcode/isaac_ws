@@ -68,6 +68,13 @@ def build_execution_plan(cfg: DictConfig) -> dict[str, Any]:
             "headless": bool(cfg.runtime.headless),
             "device": str(cfg.runtime.device),
             "num_envs": int(cfg.env.num_envs),
+            "distributed": bool(cfg.runtime.distributed),
+            "num_gpus": int(cfg.runtime.num_gpus),
+            "nnodes": int(cfg.runtime.nnodes),
+            "node_rank": int(cfg.runtime.node_rank),
+            "master_addr": str(cfg.runtime.master_addr),
+            "master_port": int(cfg.runtime.master_port),
+            "ui_mode": str(cfg.runtime.ui_mode),
         },
         "seed": get_seed(cfg),
         "storage": {

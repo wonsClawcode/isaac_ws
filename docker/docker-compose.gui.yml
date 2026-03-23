@@ -1,0 +1,10 @@
+services:
+  isaac-lab:
+    environment:
+      HEADLESS: 0
+      ISAAC_WS_GUI: 1
+      DISPLAY: ${DISPLAY:?DISPLAY must be set for GUI runs}
+      XAUTHORITY: /tmp/.docker.xauth
+    volumes:
+      - ${XAUTHORITY_PATH:?XAUTHORITY_PATH must point to a readable Xauthority file}:/tmp/.docker.xauth:ro
+      - ${X11_SOCKET_DIR:-/tmp/.X11-unix}:/tmp/.X11-unix:rw

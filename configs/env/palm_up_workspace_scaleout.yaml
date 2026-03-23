@@ -1,0 +1,19 @@
+name: palm_up_workspace_scaleout
+scene_type: tabletop_grasp
+num_envs: 1024
+env_spacing: 2.2
+enable_cameras: false
+terrain: plane
+table:
+  usd: assets/scenes/palm_up_workspace/tabletop_grasp.usd
+  height_m: 0.78
+workspace:
+  palm_target_position_m: [0.45, 0.0, 0.95]
+  sphere_spawn_jitter_m: [0.015, 0.015, 0.006]
+  wrist_pose_locked_xy: true
+physics:
+  timestep_s: 0.008333
+  substeps: 2
+  enable_self_collision: true
+  solver_position_iterations: 16
+  solver_velocity_iterations: 4

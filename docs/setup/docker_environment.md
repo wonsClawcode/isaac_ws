@@ -53,6 +53,35 @@
 
 최초 실행 시 Omniverse 확장 캐시를 내려받는 데 시간이 오래 걸릴 수 있다.
 
+## GUI 디버그
+
+Isaac Lab 공식 문서 기준으로 기본 제공 Isaac Lab 컨테이너는 headless 전용이다. 이 저장소는 GUI가 필요한 경우를 위해 Isaac Sim 5.1.0 베이스 이미지 위에 커스텀 Docker 이미지를 만들고, 별도 Compose 오버라이드로 X11을 연결한다.
+
+```bash
+./scripts/prepare_x11.sh
+./scripts/docker_shell_gui.sh
+./scripts/run_isaacsim_gui.sh
+```
+
+필수 조건:
+
+- Linux 호스트에서 X11 세션 사용
+- `DISPLAY` 설정
+- 읽기 가능한 `~/.Xauthority`
+- 필요하면 `xhost`로 로컬 사용자 접근 허용
+
+GUI는 디버그, 자산 조립, contact 시각화 용도로만 쓰고, 대규모 학습은 별도 headless 프로파일로 분리하는 편이 안정적이다.
+
+## 스케일 아웃 학습 프로파일
+
+이 저장소는 GUI 확인용과 대규모 병렬 학습용 프로파일을 분리한다.
+
+- GUI 디버그: `env=palm_up_workspace_debug runtime=gui_debug`
+- 일반 headless: `env=palm_up_workspace runtime=headless`
+- 대규모 단일 노드 학습: `env=palm_up_workspace_scaleout runtime=distributed_2gpu` 또는 `runtime=distributed_4gpu`
+
+대규모 학습에서는 `num_envs`, `shm_size`, VRAM 사용량, checkpoint 주기를 함께 조정해야 한다.
+
 ## 학습 래퍼
 
 ```bash
