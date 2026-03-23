@@ -5,6 +5,7 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/docker_common.sh"
 
 VERIFY_SIM_APP_SMOKE="${VERIFY_SIM_APP_SMOKE:-0}"
 VERIFY_APP_LAUNCHER_SMOKE="${VERIFY_APP_LAUNCHER_SMOKE:-0}"
+VERIFY_SMOKE_TIMEOUT_SEC="${VERIFY_SMOKE_TIMEOUT_SEC:-90}"
 
 PYTHON_CODE=$(cat <<'PY'
 import os
@@ -84,12 +85,20 @@ elif run_app_launcher_smoke:
 PY
 )
 
-docker_compose run --rm \
+docker_compose run --rm -T \
+  -e DISPLAY= \
+  -e HEADLESS=1 \
+  -e ISAAC_WS_GUI=0 \
   -e VERIFY_SIM_APP_SMOKE="${VERIFY_SIM_APP_SMOKE}" \
   -e VERIFY_APP_LAUNCHER_SMOKE="${VERIFY_APP_LAUNCHER_SMOKE}" \
   isaac-lab /isaac-sim/python.sh -c "${PYTHON_CODE}"
 
 if [[ "${VERIFY_SIM_APP_SMOKE}" == "1" ]]; then
-  docker_compose run --rm isaac-lab \
+  docker_compose run --rm -T \
+    -e DISPLAY= \
+    -e HEADLESS=1 \
+    -e ISAAC_WS_GUI=0 \
+    isaac-lab \
+    timeout "${VERIFY_SMOKE_TIMEOUT_SEC}" \
     /isaac-sim/isaac-sim.compatibility_check.sh --/app/quitAfter=10 --no-window --reset-user
 fi
