@@ -70,7 +70,7 @@ Isaac Lab 공식 문서 기준으로 기본 제공 Isaac Lab 컨테이너는 hea
 - 읽기 가능한 `~/.Xauthority`
 - 필요하면 `xhost`로 로컬 사용자 접근 허용
 
-기본 컨테이너 유저는 root다. Isaac Sim 이미지 내부 `/isaac-sim` 경로 권한과 충돌하지 않게 하기 위한 선택이며, `prepare_x11.sh`는 host 사용자와 root 둘 다 X11 접근을 허용한다.
+기본 컨테이너 유저는 root다. Isaac Sim 이미지 내부 `/isaac-sim` 경로 권한과 충돌하지 않게 하기 위한 선택이며, `prepare_x11.sh`는 host 사용자와 root 둘 다 X11 접근을 허용한다. 이 때문에 Kit 직접 실행 경로는 `OMNI_KIT_ALLOW_ROOT=1`과 `--allow-root`를 함께 사용한다.
 
 GUI는 디버그, 자산 조립, contact 시각화 용도로만 쓰고, 대규모 학습은 별도 headless 프로파일로 분리하는 편이 안정적이다.
 
