@@ -3,5 +3,26 @@ set -euo pipefail
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/docker_common.sh"
 
-docker_compose run --rm isaac-lab /isaac-sim/python.sh -c \
-  "from importlib.metadata import version; import torch; import isaaclab_rl.rsl_rl as isaaclab_rsl_rl; from isaacsim.core.prims import Articulation; print(f'isaacsim={version(\"isaacsim\")}'); print(f'isaaclab={version(\"isaaclab\")}'); print(f'torch={torch.__version__}'); print(f'torch_path={torch.__file__}'); print(f'isaacsim_core_prims={Articulation.__module__}'); print(f'isaaclab_rsl_rl={isaaclab_rsl_rl.__file__}')"
+PYTHON_CODE=$(cat <<'PY'
+from importlib.metadata import version
+
+import torch
+from isaacsim.core.prims import Articulation
+
+print(f"isaacsim={version('isaacsim')}")
+print(f"isaaclab={version('isaaclab')}")
+print(f"torch={torch.__version__}")
+print(f"torch_path={torch.__file__}")
+print(f"isaacsim_core_prims={Articulation.__module__}")
+
+try:
+    import isaaclab_rl.rsl_rl as isaaclab_rsl_rl
+
+    print(f"isaaclab_rsl_rl={isaaclab_rsl_rl.__file__}")
+except Exception as exc:
+    print(f"isaaclab_rsl_rl_error={type(exc).__name__}: {exc}")
+    raise
+PY
+)
+
+docker_compose run --rm isaac-lab /isaac-sim/python.sh -c "${PYTHON_CODE}"

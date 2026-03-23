@@ -1,2 +1,4 @@
 --extra-index-url https://pypi.nvidia.com
 isaaclab[all]==2.3.2.post1
+rsl-rl-lib==3.1.2
+onnxscript>=0.5

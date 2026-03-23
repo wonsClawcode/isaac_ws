@@ -36,6 +36,7 @@
 - Isaac Lab: `isaaclab[all]==2.3.2.post1`
 - PyTorch: Isaac Sim 5.1.0 베이스 이미지에 포함된 번들을 사용
 - 기본 RL 라이브러리: `rsl_rl`
+- `rsl_rl` 런타임 의존성: `rsl-rl-lib==3.1.2`, `onnxscript>=0.5`
 - 선택 RL 라이브러리: `rl_games`는 `INSTALL_RL_GAMES=1`일 때만 설치
 
 ## 설치 확인

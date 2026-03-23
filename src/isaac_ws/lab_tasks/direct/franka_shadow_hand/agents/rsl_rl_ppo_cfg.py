@@ -1,12 +1,19 @@
 from __future__ import annotations
 
 from isaaclab.utils import configclass
-from isaaclab_rl.rsl_rl import (
-    RslRlMLPModelCfg,
-    RslRlOnPolicyRunnerCfg,
-    RslRlPpoActorCriticCfg,
-    RslRlPpoAlgorithmCfg,
-)
+
+try:
+    from isaaclab_rl.rsl_rl import (
+        RslRlMLPModelCfg,
+        RslRlOnPolicyRunnerCfg,
+        RslRlPpoActorCriticCfg,
+        RslRlPpoAlgorithmCfg,
+    )
+except Exception as exc:  # pragma: no cover - depends on container image contents
+    raise ImportError(
+        "isaaclab_rl.rsl_rl is unavailable. Rebuild the Docker image after updating runtime "
+        "dependencies so rsl-rl-lib and Isaac Lab RL bindings are installed."
+    ) from exc
 
 
 @configclass
