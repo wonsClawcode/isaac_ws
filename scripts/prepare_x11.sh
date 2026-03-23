@@ -13,7 +13,9 @@ fi
 
 LOCAL_USER="$(id -un)"
 xhost "+si:localuser:${LOCAL_USER}" >/dev/null
+xhost "+si:localuser:root" >/dev/null
 
 echo "X11 access granted for local user '${LOCAL_USER}'."
+echo "X11 access granted for container user 'root'."
 echo "DISPLAY=${DISPLAY}"
 echo "XAUTHORITY=${XAUTHORITY:-${HOME}/.Xauthority}"
