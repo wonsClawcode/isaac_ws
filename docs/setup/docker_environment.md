@@ -45,7 +45,7 @@
 ./scripts/verify_docker_stack.sh
 ```
 
-이 스크립트는 컨테이너 안에서 headless `SimulationApp`을 먼저 띄운 뒤 `isaacsim`, `isaaclab`, `rsl-rl-lib`, `onnxscript`, `torch` 경로와 기본 RL 백엔드인 `isaaclab_rl.rsl_rl`, `isaacsim.core.prims` import를 검증한다.
+이 스크립트는 기본적으로 컨테이너 안에서 `isaacsim`, `isaaclab`, `rsl-rl-lib`, `onnxscript`, `torch` 경로와 `isaaclab_rl.rsl_rl` import를 경량 검증한다. `SimulationApp` smoke 테스트는 기본으로 건너뛰고, 필요하면 `VERIFY_SIM_APP_SMOKE=1 ./scripts/verify_docker_stack.sh`로 추가 실행한다.
 
 ## 컨테이너 진입
 

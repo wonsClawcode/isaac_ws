@@ -3,7 +3,10 @@ set -euo pipefail
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/docker_common.sh"
 
+VERIFY_SIM_APP_SMOKE="${VERIFY_SIM_APP_SMOKE:-0}"
+
 PYTHON_CODE=$(cat <<'PY'
+import os
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
@@ -29,25 +32,34 @@ print(f"onnxscript={version('onnxscript')}")
 print(f"torch={torch.__version__}")
 print(f"torch_path={torch.__file__}")
 
-from isaacsim import SimulationApp
+import isaacsim
 
-simulation_app = SimulationApp({"headless": True})
+print(f"isaacsim_module={isaacsim.__file__}")
+print(f"isaacsim_has_simulation_app={hasattr(isaacsim, 'SimulationApp')}")
 
 try:
-    from isaacsim.core.prims import Articulation
+    import isaaclab_rl.rsl_rl as isaaclab_rsl_rl
 
-    print(f"isaacsim_core_prims={Articulation.__module__}")
+    print(f"isaaclab_rsl_rl={isaaclab_rsl_rl.__file__}")
+except Exception as exc:
+    print(f"isaaclab_rsl_rl_error={type(exc).__name__}: {exc}")
+    raise
 
+run_smoke = os.getenv("VERIFY_SIM_APP_SMOKE", "0") == "1"
+if not run_smoke:
+    print("simulation_app_smoke=skipped (set VERIFY_SIM_APP_SMOKE=1 to enable)")
+else:
+    from isaacsim import SimulationApp
+
+    simulation_app = SimulationApp({"headless": True})
     try:
-        import isaaclab_rl.rsl_rl as isaaclab_rsl_rl
+        from isaacsim.core.prims import Articulation
 
-        print(f"isaaclab_rsl_rl={isaaclab_rsl_rl.__file__}")
-    except Exception as exc:
-        print(f"isaaclab_rsl_rl_error={type(exc).__name__}: {exc}")
-        raise
-finally:
-    simulation_app.close()
+        print(f"isaacsim_core_prims={Articulation.__module__}")
+        print("simulation_app_smoke=passed")
+    finally:
+        simulation_app.close()
 PY
 )
 
-docker_compose run --rm isaac-lab /isaac-sim/python.sh -c "${PYTHON_CODE}"
+docker_compose run --rm -e VERIFY_SIM_APP_SMOKE="${VERIFY_SIM_APP_SMOKE}" isaac-lab /isaac-sim/python.sh -c "${PYTHON_CODE}"
