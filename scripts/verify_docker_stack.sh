@@ -53,9 +53,18 @@ run_smoke = os.getenv("VERIFY_SIM_APP_SMOKE", "0") == "1"
 if not run_smoke:
     print("simulation_app_smoke=skipped (set VERIFY_SIM_APP_SMOKE=1 to enable runtime imports)")
 else:
-    from isaacsim import SimulationApp
+    from isaaclab.app import AppLauncher
 
-    simulation_app = SimulationApp({"headless": True})
+    app_launcher = AppLauncher(
+        {
+            "headless": True,
+            "enable_cameras": False,
+            "device": "cuda:0",
+            "distributed": False,
+            "multi_gpu": False,
+        }
+    )
+    simulation_app = app_launcher.app
     try:
         from pxr import Usd
         import isaaclab_tasks

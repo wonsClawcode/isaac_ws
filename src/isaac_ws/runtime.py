@@ -90,6 +90,9 @@ def app_launcher_args(cfg: DictConfig) -> dict[str, Any]:
         "livestream": 0,
         "device": str(cfg.runtime.device),
         "distributed": bool(cfg.runtime.distributed),
+        # Isaac Lab RL uses one process per GPU for scale-out; renderer multi-GPU is unnecessary here
+        # and has proven unstable on some container/runtime combinations.
+        "multi_gpu": False,
     }
 
 
