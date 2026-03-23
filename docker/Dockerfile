@@ -30,14 +30,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY docker/requirements.runtime.txt /tmp/requirements.runtime.txt
 
 RUN git clone --branch "${ISAACLAB_GIT_REF}" --depth 1 "${ISAACLAB_GIT_URL}" "${ISAACLAB_ROOT}" \
-    && /isaac-sim/python.sh -m pip install -r /tmp/requirements.runtime.txt \
+    && if grep -Eq '^[[:space:]]*[^#[:space:]]' /tmp/requirements.runtime.txt; then \
+         /isaac-sim/python.sh -m pip install -r /tmp/requirements.runtime.txt; \
+       else \
+         echo "Skipping additional runtime requirements"; \
+       fi \
     && /isaac-sim/python.sh -m pip install --no-build-isolation -e "${ISAACLAB_ROOT}/source/isaaclab" \
     && /isaac-sim/python.sh -m pip install --no-build-isolation -e "${ISAACLAB_ROOT}/source/isaaclab_assets" \
     && /isaac-sim/python.sh -m pip install --no-build-isolation -e "${ISAACLAB_ROOT}/source/isaaclab_tasks" \
     && /isaac-sim/python.sh -m pip install --no-build-isolation -e "${ISAACLAB_ROOT}/source/isaaclab_rl[rsl-rl]" \
     && if [ "${INSTALL_RL_GAMES}" = "1" ]; then \
          git clone --branch "${RL_GAMES_GIT_REF}" --depth 1 "${RL_GAMES_GIT_URL}" "${RL_GAMES_ROOT}" \
-         && /isaac-sim/python.sh -m pip install gym \
+         && /isaac-sim/python.sh -m pip install "poetry-core>=1.0.0" gym \
          && /isaac-sim/python.sh -m pip install --no-build-isolation -e "${RL_GAMES_ROOT}"; \
        else \
          echo "Skipping optional rl_games install"; \
