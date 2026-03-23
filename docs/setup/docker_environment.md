@@ -37,6 +37,7 @@
 - PyTorch: Isaac Sim 5.1.0 베이스 이미지에 포함된 번들을 사용
 - 기본 RL 라이브러리: `rsl_rl`
 - `rsl_rl` 런타임 의존성: `isaaclab[all]==2.3.2.post1`이 함께 설치하는 `rsl-rl-lib==3.0.1`, `onnxscript>=0.5`
+- `isaaclab_rl` wrapper: PyPI `isaaclab` wheel에 포함되지 않으므로 이 저장소의 `src/isaaclab_rl`에 vendor
 - 선택 RL 라이브러리: `rl_games`는 `INSTALL_RL_GAMES=1`일 때만 설치
 
 ## 설치 확인
@@ -45,7 +46,7 @@
 ./scripts/verify_docker_stack.sh
 ```
 
-이 스크립트는 기본적으로 컨테이너 안에서 `isaacsim`, `isaaclab`, `rsl-rl-lib`, `onnxscript`, `torch` 경로와 `isaaclab_rl.rsl_rl` import를 경량 검증한다. `SimulationApp` smoke 테스트는 기본으로 건너뛰고, 필요하면 `VERIFY_SIM_APP_SMOKE=1 ./scripts/verify_docker_stack.sh`로 추가 실행한다.
+이 스크립트는 기본적으로 컨테이너 안에서 `isaacsim`, `isaaclab`, `rsl-rl-lib`, `onnxscript`, `torch` 경로와 workspace에 포함된 `isaaclab_rl.rsl_rl` import를 경량 검증한다. `SimulationApp` smoke 테스트는 기본으로 건너뛰고, 필요하면 `VERIFY_SIM_APP_SMOKE=1 ./scripts/verify_docker_stack.sh`로 추가 실행한다.
 
 ## 컨테이너 진입
 

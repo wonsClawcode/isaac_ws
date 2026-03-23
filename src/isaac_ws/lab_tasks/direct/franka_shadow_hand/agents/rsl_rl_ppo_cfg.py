@@ -11,8 +11,8 @@ try:
     )
 except Exception as exc:  # pragma: no cover - depends on container image contents
     raise ImportError(
-        "isaaclab_rl.rsl_rl is unavailable. Rebuild the Docker image after updating runtime "
-        "dependencies so the PyPI-provided Isaac Lab RL bindings and matching rsl-rl-lib are installed."
+        "isaaclab_rl.rsl_rl is unavailable. Ensure the local vendored isaaclab_rl package is present in "
+        "src/isaaclab_rl and that the workspace package install inside the container completed successfully."
     ) from exc
 
 
