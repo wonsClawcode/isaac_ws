@@ -11,6 +11,8 @@ from isaacsim.core.prims import Articulation
 
 print(f"isaacsim={version('isaacsim')}")
 print(f"isaaclab={version('isaaclab')}")
+print(f"rsl_rl_lib={version('rsl-rl-lib')}")
+print(f"onnxscript={version('onnxscript')}")
 print(f"torch={torch.__version__}")
 print(f"torch_path={torch.__file__}")
 print(f"isaacsim_core_prims={Articulation.__module__}")
