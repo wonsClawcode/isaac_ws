@@ -1,3 +1,4 @@
 from isaac_ws.task_specs.franka_shadow_hand_grasp import FRANKA_SHADOW_HAND_GRASP_SPEC
+from isaac_ws.task_specs.shadow_hand_sphere_grasp import SHADOW_HAND_SPHERE_GRASP_SPEC
 
-__all__ = ["FRANKA_SHADOW_HAND_GRASP_SPEC"]
+__all__ = ["FRANKA_SHADOW_HAND_GRASP_SPEC", "SHADOW_HAND_SPHERE_GRASP_SPEC"]

@@ -1,19 +1,19 @@
 defaults:
-  - task: grasp_sphere_shadow_hand
-  - env: palm_up_workspace
-  - robot: franka_shadow_hand
-  - obs: grasp_proprio_contact
-  - action: franka_shadow_hand_delta_pos
-  - reward: grasp_sphere_dense
+  - task: grasp_sphere_shadow_hand_only
+  - env: shadow_hand_palm_up
+  - robot: shadow_hand
+  - obs: shadow_hand_grasp_proprio
+  - action: shadow_hand_delta_pos
+  - reward: shadow_hand_grasp_dense
   - algo: rsl_rl_ppo
-  - experiment: grasp_bootstrap
+  - experiment: shadow_hand_grasp_bootstrap
   - runtime: headless
   - deploy: ros2_shadow_grasp
   - _self_
 
 project:
   name: isaac_ws
-  stage: franka_shadow_grasp
+  stage: shadow_hand_sphere_grasp
 
 run:
   mode: execute

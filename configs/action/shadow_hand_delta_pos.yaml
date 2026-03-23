@@ -1,0 +1,13 @@
+name: shadow_hand_delta_pos
+space: normalized_delta_joint_position
+arm:
+  dof: 0
+  scale: 0.0
+  clip: 1.0
+  freeze_base_arm_by_default: true
+hand:
+  dof: 20
+  scale: 0.18
+  clip: 1.0
+curriculum:
+  unfreeze_arm_after_stage: fixed_hand_pose

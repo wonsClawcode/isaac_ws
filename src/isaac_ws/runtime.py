@@ -111,8 +111,9 @@ def apply_env_overrides(cfg: DictConfig, env_cfg: Any, app_launcher: Any) -> Any
     env_cfg.sim.render_interval = int(cfg.task.control_decimation)
     env_cfg.sim.device = runtime_device(cfg, app_launcher)
 
-    if hasattr(env_cfg, "robot_cfg") and hasattr(env_cfg.robot_cfg, "spawn"):
-        env_cfg.robot_cfg.spawn.usd_path = str(cfg.robot.asset_usd)
+    asset_usd = str(getattr(cfg.robot, "asset_usd", "")).strip()
+    if asset_usd and hasattr(env_cfg, "robot_cfg") and hasattr(env_cfg.robot_cfg, "spawn"):
+        env_cfg.robot_cfg.spawn.usd_path = asset_usd
     if hasattr(env_cfg, "object_cfg") and hasattr(env_cfg.object_cfg, "spawn"):
         if hasattr(env_cfg.object_cfg.spawn, "radius"):
             env_cfg.object_cfg.spawn.radius = float(cfg.task.object.radius_m)
@@ -136,6 +137,14 @@ def apply_env_overrides(cfg: DictConfig, env_cfg: Any, app_launcher: Any) -> Any
 
     if hasattr(env_cfg, "table_height_m"):
         env_cfg.table_height_m = float(cfg.env.table.height_m)
+    if hasattr(env_cfg, "hand_root_position") and "hand_root_position_m" in cfg.env.workspace:
+        env_cfg.hand_root_position = tuple(float(value) for value in cfg.env.workspace.hand_root_position_m)
+    if hasattr(env_cfg, "hand_root_rotation") and "hand_root_rotation_wxyz" in cfg.env.workspace:
+        env_cfg.hand_root_rotation = tuple(float(value) for value in cfg.env.workspace.hand_root_rotation_wxyz)
+    if hasattr(env_cfg, "grasp_center_position") and "grasp_center_position_m" in cfg.env.workspace:
+        env_cfg.grasp_center_position = tuple(float(value) for value in cfg.env.workspace.grasp_center_position_m)
+    if hasattr(env_cfg, "object_spawn_center") and "sphere_spawn_center_m" in cfg.env.workspace:
+        env_cfg.object_spawn_center = tuple(float(value) for value in cfg.env.workspace.sphere_spawn_center_m)
     if hasattr(env_cfg, "palm_target_position"):
         env_cfg.palm_target_position = tuple(float(value) for value in cfg.env.workspace.palm_target_position_m)
     if hasattr(env_cfg, "object_spawn_offset"):
@@ -143,7 +152,10 @@ def apply_env_overrides(cfg: DictConfig, env_cfg: Any, app_launcher: Any) -> Any
     if hasattr(env_cfg, "object_spawn_jitter"):
         env_cfg.object_spawn_jitter = tuple(float(value) for value in cfg.env.workspace.sphere_spawn_jitter_m)
     if hasattr(env_cfg, "object_nominal_spawn_height_m"):
-        env_cfg.object_nominal_spawn_height_m = env_cfg.palm_target_position[2] + env_cfg.object_spawn_offset[2]
+        if hasattr(env_cfg, "object_spawn_center"):
+            env_cfg.object_nominal_spawn_height_m = float(env_cfg.object_spawn_center[2])
+        else:
+            env_cfg.object_nominal_spawn_height_m = env_cfg.palm_target_position[2] + env_cfg.object_spawn_offset[2]
     if hasattr(env_cfg, "min_success_lift_height_m"):
         env_cfg.min_success_lift_height_m = float(cfg.task.success.min_lift_height_m)
     if hasattr(env_cfg, "max_success_object_speed_mps"):
@@ -187,7 +199,9 @@ def apply_agent_overrides(cfg: DictConfig, agent_cfg: Any, app_launcher: Any) ->
     agent_cfg.save_interval = int(cfg.experiment.checkpoint_interval)
     agent_cfg.experiment_name = build_experiment_id(cfg)
     agent_cfg.run_name = str(cfg.experiment.name)
-    agent_cfg.clip_actions = float(cfg.action.arm.clip)
+    arm_clip = float(getattr(cfg.action.arm, "clip", 0.0))
+    hand_clip = float(getattr(cfg.action.hand, "clip", 0.0))
+    agent_cfg.clip_actions = max(arm_clip, hand_clip, 1.0)
 
     if bool(cfg.runtime.distributed):
         seed = agent_cfg.seed + int(app_launcher.local_rank)

@@ -1,0 +1,42 @@
+name: grasp_sphere_shadow_hand_only
+isaaclab_task_id: Isaac-Grasp-Sphere-Shadow-Hand-Direct-v0
+implementation_required: true
+implementation:
+  module: isaac_ws.lab_tasks.direct.shadow_hand_sphere
+  entry_point: isaac_ws.lab_tasks.direct.shadow_hand_sphere.env:ShadowHandSphereGraspEnv
+  env_cfg_entry_point: isaac_ws.lab_tasks.direct.shadow_hand_sphere.env_cfg:ShadowHandSphereGraspEnvCfg
+  rl_games_cfg_entry_point: isaac_ws.lab_tasks.direct.shadow_hand_sphere.agents:rl_games_ppo_cfg.yaml
+  rsl_rl_cfg_entry_point: isaac_ws.lab_tasks.direct.shadow_hand_sphere.agents.rsl_rl_ppo_cfg:ShadowHandSphereGraspPPORunnerCfg
+description: Palm-up grasp task where a fixed Shadow Hand closes around and stabilizes a sphere.
+workflow: direct
+episode_length_s: 8.0
+control_decimation: 2
+object:
+  shape: sphere
+  radius_m: 0.035
+  mass_kg: 0.08
+  spawn_frame: world
+  spawn_offset_m: [0.0, 0.0, 0.0]
+success:
+  min_lift_height_m: 0.015
+  hold_duration_s: 0.75
+  max_object_speed_mps: 0.15
+  min_contact_sites: 3
+  require_palm_up_cosine: 0.0
+reset:
+  palm_up_orientation_quat_wxyz: [0.7071, -0.7071, 0.0, 0.0]
+  arm_joint_noise_rad: 0.0
+  hand_joint_noise_rad: 0.15
+compatibility:
+  robots:
+    - shadow_hand
+  envs:
+    - shadow_hand_palm_up
+    - shadow_hand_palm_up_debug
+    - shadow_hand_palm_up_scaleout
+  observations:
+    - shadow_hand_grasp_proprio
+  actions:
+    - shadow_hand_delta_pos
+  rewards:
+    - shadow_hand_grasp_dense

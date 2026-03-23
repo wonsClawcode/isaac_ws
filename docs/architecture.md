@@ -31,14 +31,14 @@ Hydra 조합으로 실험을 정의한다. 코드 수정 없이 설정 조합만
 예시 조합:
 
 ```text
-task=grasp_sphere_shadow_hand env=palm_up_workspace robot=franka_shadow_hand obs=grasp_proprio_contact action=franka_shadow_hand_delta_pos reward=grasp_sphere_dense algo=rsl_rl_ppo experiment=grasp_bootstrap runtime=headless deploy=ros2_shadow_grasp
+task=grasp_sphere_shadow_hand_only env=shadow_hand_palm_up robot=shadow_hand obs=shadow_hand_grasp_proprio action=shadow_hand_delta_pos reward=shadow_hand_grasp_dense algo=rsl_rl_ppo experiment=shadow_hand_grasp_bootstrap runtime=headless deploy=ros2_shadow_grasp
 ```
 
 운영 프로파일 예시:
 
 ```text
-task=grasp_sphere_shadow_hand env=palm_up_workspace_debug runtime=gui_debug
-task=grasp_sphere_shadow_hand env=palm_up_workspace_scaleout runtime=distributed_4gpu
+task=grasp_sphere_shadow_hand_only env=shadow_hand_palm_up_debug runtime=gui_debug
+task=grasp_sphere_shadow_hand_only env=shadow_hand_palm_up_scaleout runtime=distributed_4gpu
 ```
 
 ## 3. 실행 및 배포 층
