@@ -4,6 +4,7 @@ set -euo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/docker_common.sh"
 
 VERIFY_SIM_APP_SMOKE="${VERIFY_SIM_APP_SMOKE:-0}"
+VERIFY_APP_LAUNCHER_SMOKE="${VERIFY_APP_LAUNCHER_SMOKE:-0}"
 
 PYTHON_CODE=$(cat <<'PY'
 import os
@@ -50,9 +51,11 @@ print(f"isaacsim_module={isaacsim.__file__}")
 print(f"isaacsim_has_simulation_app={hasattr(isaacsim, 'SimulationApp')}")
 
 run_smoke = os.getenv("VERIFY_SIM_APP_SMOKE", "0") == "1"
-if not run_smoke:
-    print("simulation_app_smoke=skipped (set VERIFY_SIM_APP_SMOKE=1 to enable runtime imports)")
-else:
+run_app_launcher_smoke = os.getenv("VERIFY_APP_LAUNCHER_SMOKE", "0") == "1"
+if not run_smoke and not run_app_launcher_smoke:
+    print("simulation_app_smoke=skipped (set VERIFY_SIM_APP_SMOKE=1 to run Isaac Sim compatibility check)")
+    print("app_launcher_smoke=skipped (set VERIFY_APP_LAUNCHER_SMOKE=1 to run deeper Isaac Lab runtime smoke)")
+elif run_app_launcher_smoke:
     from isaaclab.app import AppLauncher
 
     app_launcher = AppLauncher(
@@ -75,10 +78,18 @@ else:
         print(f"isaaclab_tasks={isaaclab_tasks.__file__}")
         print(f"isaaclab_rsl_rl={isaaclab_rsl_rl.__file__}")
         print(f"isaacsim_core_prims={Articulation.__module__}")
-        print("simulation_app_smoke=passed")
+        print("app_launcher_smoke=passed")
     finally:
         simulation_app.close()
 PY
 )
 
-docker_compose run --rm -e VERIFY_SIM_APP_SMOKE="${VERIFY_SIM_APP_SMOKE}" isaac-lab /isaac-sim/python.sh -c "${PYTHON_CODE}"
+docker_compose run --rm \
+  -e VERIFY_SIM_APP_SMOKE="${VERIFY_SIM_APP_SMOKE}" \
+  -e VERIFY_APP_LAUNCHER_SMOKE="${VERIFY_APP_LAUNCHER_SMOKE}" \
+  isaac-lab /isaac-sim/python.sh -c "${PYTHON_CODE}"
+
+if [[ "${VERIFY_SIM_APP_SMOKE}" == "1" ]]; then
+  docker_compose run --rm isaac-lab \
+    /isaac-sim/isaac-sim.compatibility_check.sh --/app/quitAfter=10 --no-window --reset-user
+fi

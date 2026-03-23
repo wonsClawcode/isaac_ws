@@ -45,7 +45,14 @@
 ./scripts/verify_docker_stack.sh
 ```
 
-이 스크립트는 기본적으로 컨테이너 안에서 `isaacsim`, `isaaclab`, `isaaclab_tasks`, `rsl-rl-lib`, `onnxscript`, `torch` 경로와 source install된 `isaaclab_rl.rsl_rl` import를 경량 검증한다. `SimulationApp` smoke 테스트는 기본으로 건너뛰고, 필요하면 `VERIFY_SIM_APP_SMOKE=1 ./scripts/verify_docker_stack.sh`로 추가 실행한다.
+이 스크립트는 기본적으로 컨테이너 안에서 `isaacsim`, `isaaclab`, `isaaclab_tasks`, `isaaclab_rl`, `rsl-rl-lib`, `onnxscript`, `torch` 설치 상태를 경량 검증한다.
+
+- `VERIFY_SIM_APP_SMOKE=1 ./scripts/verify_docker_stack.sh`
+  공식 `isaac-sim.compatibility_check.sh --/app/quitAfter=10 --no-window --reset-user`를 실행한다.
+- `VERIFY_APP_LAUNCHER_SMOKE=1 ./scripts/verify_docker_stack.sh`
+  Isaac Lab `AppLauncher` 기반의 더 깊은 runtime smoke를 실행한다.
+
+Kit 런타임 충돌이 반복되면 먼저 [`/Users/wonnerky/workspace/isaac_ws/scripts/docker_clear_caches.sh`](/Users/wonnerky/workspace/isaac_ws/scripts/docker_clear_caches.sh)로 named cache를 비우는 편이 안전하다.
 
 ## 컨테이너 진입
 
