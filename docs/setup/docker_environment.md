@@ -28,12 +28,15 @@
 ./scripts/docker_build.sh --no-cache
 ```
 
+기본 알고리즘은 `rsl_rl_ppo`이므로, 회사망에서 GitHub 접근이 막혀 있으면 `rl_games`는 설치하지 않은 상태로 유지하는 편이 안전하다. 공식 Isaac Lab pip 설치 문서도 `rl_games`는 필요할 때만 별도로 설치하도록 안내한다.
+
 이 이미지는 아래 레이어를 사용한다.
 
 - 베이스: `nvcr.io/nvidia/isaac-sim:5.1.0`
 - Isaac Lab: `isaaclab[all]==2.3.2.post1`
 - PyTorch: Isaac Sim 5.1.0 베이스 이미지에 포함된 번들을 사용
-- RL 라이브러리: `rl_games` Python 3.11 포크
+- 기본 RL 라이브러리: `rsl_rl`
+- 선택 RL 라이브러리: `rl_games`는 `INSTALL_RL_GAMES=1`일 때만 설치
 
 ## 설치 확인
 
@@ -41,7 +44,7 @@
 ./scripts/verify_docker_stack.sh
 ```
 
-이 스크립트는 컨테이너 안에서 `isaacsim`, `isaaclab`, `torch` 경로를 확인하고 `isaacsim.core.prims` import까지 검증한다.
+이 스크립트는 컨테이너 안에서 `isaacsim`, `isaaclab`, `torch` 경로와 기본 RL 백엔드인 `isaaclab_rl.rsl_rl`을 확인하고 `isaacsim.core.prims` import까지 검증한다.
 
 ## 컨테이너 진입
 

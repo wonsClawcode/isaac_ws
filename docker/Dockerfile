@@ -2,6 +2,7 @@ ARG ISAACSIM_BASE_IMAGE=nvcr.io/nvidia/isaac-sim:5.1.0
 FROM ${ISAACSIM_BASE_IMAGE}
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG INSTALL_RL_GAMES=0
 
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
@@ -24,7 +25,11 @@ COPY docker/requirements.runtime.txt /tmp/requirements.runtime.txt
 COPY docker/requirements.rl.txt /tmp/requirements.rl.txt
 
 RUN /isaac-sim/python.sh -m pip install -r /tmp/requirements.runtime.txt \
-    && /isaac-sim/python.sh -m pip install -r /tmp/requirements.rl.txt
+    && if [ "${INSTALL_RL_GAMES}" = "1" ]; then \
+         /isaac-sim/python.sh -m pip install -r /tmp/requirements.rl.txt; \
+       else \
+         echo "Skipping optional rl_games install"; \
+       fi
 
 WORKDIR ${ISAAC_WS_ROOT}
 COPY pyproject.toml README.md /tmp/project/
