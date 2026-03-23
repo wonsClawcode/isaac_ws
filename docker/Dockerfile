@@ -21,12 +21,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 COPY docker/requirements.runtime.txt /tmp/requirements.runtime.txt
-COPY docker/requirements.torch.txt /tmp/requirements.torch.txt
 COPY docker/requirements.rl.txt /tmp/requirements.rl.txt
 
-RUN /isaac-sim/python.sh -m pip install --upgrade pip setuptools wheel \
-    && /isaac-sim/python.sh -m pip install -r /tmp/requirements.runtime.txt \
-    && /isaac-sim/python.sh -m pip install -r /tmp/requirements.torch.txt \
+RUN /isaac-sim/python.sh -m pip install -r /tmp/requirements.runtime.txt \
     && /isaac-sim/python.sh -m pip install -r /tmp/requirements.rl.txt
 
 WORKDIR ${ISAAC_WS_ROOT}

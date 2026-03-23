@@ -22,11 +22,17 @@
 ./scripts/docker_build.sh
 ```
 
+런타임 import 충돌을 수정한 뒤에는 캐시된 레이어를 재사용하지 않도록 아래처럼 재빌드하는 편이 안전하다.
+
+```bash
+./scripts/docker_build.sh --no-cache
+```
+
 이 이미지는 아래 레이어를 사용한다.
 
 - 베이스: `nvcr.io/nvidia/isaac-sim:5.1.0`
-- Isaac Lab: `isaaclab[isaacsim,all]==2.3.2.post1`
-- PyTorch: CUDA 12.8용 `torch==2.7.0`, `torchvision==0.22.0`
+- Isaac Lab: `isaaclab[all]==2.3.2.post1`
+- PyTorch: Isaac Sim 5.1.0 베이스 이미지에 포함된 번들을 사용
 - RL 라이브러리: `rl_games` Python 3.11 포크
 
 ## 설치 확인
@@ -35,7 +41,7 @@
 ./scripts/verify_docker_stack.sh
 ```
 
-이 스크립트는 컨테이너 안에서 `isaacsim`과 `isaaclab` 패키지 버전을 확인한다.
+이 스크립트는 컨테이너 안에서 `isaacsim`, `isaaclab`, `torch` 경로를 확인하고 `isaacsim.core.prims` import까지 검증한다.
 
 ## 컨테이너 진입
 

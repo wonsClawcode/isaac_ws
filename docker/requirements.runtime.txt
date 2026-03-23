@@ -1,2 +1,2 @@
 --extra-index-url https://pypi.nvidia.com
-isaaclab[isaacsim,all]==2.3.2.post1
+isaaclab[all]==2.3.2.post1
