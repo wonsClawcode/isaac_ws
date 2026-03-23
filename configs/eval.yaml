@@ -3,6 +3,12 @@ defaults:
   - _self_
 
 run:
-  mode: plan
+  mode: execute
   actor: eval
   python_entrypoint: isaac_ws.eval
+  checkpoint_path: ""
+  record_video: false
+  video_length: 200
+  video_interval: ${experiment.video_interval}
+  max_steps: 1000
+  real_time: false

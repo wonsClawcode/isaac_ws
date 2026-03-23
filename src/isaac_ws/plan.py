@@ -40,7 +40,8 @@ def build_inside_container_command(cfg: DictConfig) -> list[str]:
     command = [
         str(cfg.run.container_python),
         "-m",
-        str(cfg.run.python_entrypoint),
+        "isaac_ws.launch",
+        str(cfg.run.actor),
         *overrides,
     ]
     return command

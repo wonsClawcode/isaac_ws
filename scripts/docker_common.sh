@@ -37,3 +37,37 @@ docker_compose() {
     "${compose_files[@]}" \
     "$@"
 }
+
+requires_gui_runtime() {
+  local arg
+  for arg in "$@"; do
+    case "${arg}" in
+      runtime=gui_debug|runtime.headless=false|runtime.ui_mode=x11)
+        return 0
+        ;;
+    esac
+  done
+  return 1
+}
+
+enable_gui_runtime() {
+  if [[ -z "${DISPLAY:-}" ]]; then
+    echo "DISPLAY is required for GUI runtime overrides." >&2
+    exit 1
+  fi
+
+  if [[ ! -r "${XAUTHORITY_PATH}" ]]; then
+    echo "Xauthority file not found or unreadable: ${XAUTHORITY_PATH}" >&2
+    exit 1
+  fi
+
+  export DOCKER_COMPOSE_EXTRA_FILE="${ROOT_DIR}/docker/docker-compose.gui.yml"
+  export HEADLESS=0
+  export OMNI_KIT_ALLOW_ROOT="${OMNI_KIT_ALLOW_ROOT:-1}"
+}
+
+configure_runtime_compose() {
+  if requires_gui_runtime "$@"; then
+    enable_gui_runtime
+  fi
+}

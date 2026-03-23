@@ -16,13 +16,20 @@ project:
   stage: franka_shadow_grasp
 
 run:
-  mode: plan
+  mode: execute
   actor: train
   python_entrypoint: isaac_ws.train
   container_python: /isaac-sim/python.sh
   output_root: ${oc.env:ISAAC_WS_OUTPUT_ROOT,${hydra:runtime.cwd}/runs}
   log_root: ${oc.env:ISAAC_WS_LOG_ROOT,${hydra:runtime.cwd}/logs}
   checkpoint_root: ${oc.env:ISAAC_WS_CHECKPOINT_ROOT,${hydra:runtime.cwd}/checkpoints}
+  checkpoint_path: ""
+  record_video: false
+  video_length: 200
+  video_interval: ${experiment.video_interval}
+  max_steps: 0
+  real_time: false
+  export_dir: ${hydra:runtime.output_dir}/exported
 
 hydra:
   job:

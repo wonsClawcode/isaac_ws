@@ -1,2 +1,0 @@
-# Optional dependency. Enable with INSTALL_RL_GAMES=1 ./scripts/docker_build.sh
-git+https://github.com/isaac-sim/rl_games.git@python3.11

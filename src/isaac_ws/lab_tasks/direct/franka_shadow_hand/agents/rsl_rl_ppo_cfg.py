@@ -11,8 +11,8 @@ try:
     )
 except Exception as exc:  # pragma: no cover - depends on container image contents
     raise ImportError(
-        "isaaclab_rl.rsl_rl is unavailable. Ensure the local vendored isaaclab_rl package is present in "
-        "src/isaaclab_rl and that the workspace package install inside the container completed successfully."
+        "isaaclab_rl.rsl_rl is unavailable. Ensure the Isaac Lab source install completed successfully "
+        "inside the Docker image and that the workspace package editable install did not fail."
     ) from exc
 
 

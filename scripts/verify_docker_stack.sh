@@ -39,8 +39,10 @@ print(f"isaacsim_has_simulation_app={hasattr(isaacsim, 'SimulationApp')}")
 
 try:
     import isaaclab_rl.rsl_rl as isaaclab_rsl_rl
+    import isaaclab_tasks
 
     print(f"isaaclab_rsl_rl={isaaclab_rsl_rl.__file__}")
+    print(f"isaaclab_tasks={isaaclab_tasks.__file__}")
 except Exception as exc:
     print(f"isaaclab_rsl_rl_error={type(exc).__name__}: {exc}")
     raise

@@ -11,7 +11,7 @@
 - `scripts/docker_shell_gui.sh`
 - `docker/env/*.env`
 
-이 층은 어떤 머신에서 어떻게 같은 실행 환경을 확보할지를 담당한다. 현재는 `Isaac Sim 5.1.0 공식 컨테이너 + Isaac Lab pip packages`를 기반으로 이미지를 빌드한다. 저사양 로컬에서는 정의만 유지하고, 실제 GPU 실행은 사내 Linux 머신에서 수행한다. GUI는 `docker-compose.gui.yml` 오버라이드로 분리해 headless 학습 경로와 충돌하지 않게 한다.
+이 층은 어떤 머신에서 어떻게 같은 실행 환경을 확보할지를 담당한다. 현재는 `Isaac Sim 5.1.0 공식 컨테이너 + Isaac Lab git source install`을 기반으로 이미지를 빌드한다. 저사양 로컬에서는 정의만 유지하고, 실제 GPU 실행은 사내 Linux 머신에서 수행한다. GUI는 `docker-compose.gui.yml` 오버라이드로 분리해 headless 학습 경로와 충돌하지 않게 한다.
 
 ## 2. 실험 정의 층
 
@@ -51,7 +51,7 @@ task=grasp_sphere_shadow_hand env=palm_up_workspace_scaleout runtime=distributed
 - `scripts/run_export.sh`
 - `deploy/ros2/`
 
-이 층은 실험 정의를 실제 실행 플랜과 배포 산출물로 연결한다. 현재는 Docker 컨테이너 안에서 `/isaac-sim/python.sh`를 통해 프로젝트 엔트리포인트를 호출하는 구조이며, 추후 Isaac Lab 실제 태스크 코드와 ROS 2 연동을 여기서 구체화한다.
+이 층은 실험 정의를 실제 실행 플랜과 배포 산출물로 연결한다. 현재는 Docker 컨테이너 안에서 `/isaac-sim/python.sh -m isaac_ws.launch ...`를 통해 실제 학습, 평가, 내보내기를 호출하는 구조이며, 분산 학습 runtime이면 내부에서 `torch.distributed.run`으로 재실행한다.
 
 ## 운영 원칙
 

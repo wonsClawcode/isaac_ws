@@ -20,6 +20,7 @@ dev = [
 ]
 
 [project.scripts]
+isaac-ws-launch = "isaac_ws.launch:main"
 isaac-ws-train = "isaac_ws.train:main"
 isaac-ws-eval = "isaac_ws.eval:main"
 isaac-ws-export = "isaac_ws.export:main"
