@@ -4,6 +4,8 @@ FROM ${ISAACSIM_BASE_IMAGE}
 ARG DEBIAN_FRONTEND=noninteractive
 ARG ISAACLAB_GIT_URL=https://github.com/isaac-sim/IsaacLab.git
 ARG ISAACLAB_GIT_REF=v2.3.2
+ARG RL_GAMES_GIT_URL=https://github.com/isaac-sim/rl_games.git
+ARG RL_GAMES_GIT_REF=python3.11
 ARG INSTALL_RL_GAMES=0
 
 ENV LANG=C.UTF-8
@@ -13,6 +15,7 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 ENV PYTHONUNBUFFERED=1
 ENV ISAAC_WS_ROOT=/workspace/isaac_ws
 ENV ISAACLAB_ROOT=/opt/IsaacLab
+ENV RL_GAMES_ROOT=/opt/rl_games
 ENV ACCEPT_EULA=Y
 ENV PRIVACY_CONSENT=Y
 ENV OMNI_KIT_ACCEPT_EULA=YES
@@ -28,12 +31,14 @@ COPY docker/requirements.runtime.txt /tmp/requirements.runtime.txt
 
 RUN git clone --branch "${ISAACLAB_GIT_REF}" --depth 1 "${ISAACLAB_GIT_URL}" "${ISAACLAB_ROOT}" \
     && /isaac-sim/python.sh -m pip install -r /tmp/requirements.runtime.txt \
-    && /isaac-sim/python.sh -m pip install -e "${ISAACLAB_ROOT}/source/isaaclab" \
-    && /isaac-sim/python.sh -m pip install -e "${ISAACLAB_ROOT}/source/isaaclab_assets" \
-    && /isaac-sim/python.sh -m pip install -e "${ISAACLAB_ROOT}/source/isaaclab_tasks" \
-    && /isaac-sim/python.sh -m pip install -e "${ISAACLAB_ROOT}/source/isaaclab_rl[rsl-rl]" \
+    && /isaac-sim/python.sh -m pip install --no-build-isolation -e "${ISAACLAB_ROOT}/source/isaaclab" \
+    && /isaac-sim/python.sh -m pip install --no-build-isolation -e "${ISAACLAB_ROOT}/source/isaaclab_assets" \
+    && /isaac-sim/python.sh -m pip install --no-build-isolation -e "${ISAACLAB_ROOT}/source/isaaclab_tasks" \
+    && /isaac-sim/python.sh -m pip install --no-build-isolation -e "${ISAACLAB_ROOT}/source/isaaclab_rl[rsl-rl]" \
     && if [ "${INSTALL_RL_GAMES}" = "1" ]; then \
-         /isaac-sim/python.sh -m pip install -e "${ISAACLAB_ROOT}/source/isaaclab_rl[rl-games]"; \
+         git clone --branch "${RL_GAMES_GIT_REF}" --depth 1 "${RL_GAMES_GIT_URL}" "${RL_GAMES_ROOT}" \
+         && /isaac-sim/python.sh -m pip install gym \
+         && /isaac-sim/python.sh -m pip install --no-build-isolation -e "${RL_GAMES_ROOT}"; \
        else \
          echo "Skipping optional rl_games install"; \
        fi

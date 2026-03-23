@@ -37,7 +37,7 @@
 - PyTorch: Isaac Sim 5.1.0 베이스 이미지에 포함된 번들을 사용
 - 기본 RL 라이브러리: `rsl_rl`
 - source install 패키지: `isaaclab`, `isaaclab_assets`, `isaaclab_tasks`, `isaaclab_rl[rsl-rl]`
-- 선택 RL 라이브러리: `rl_games`는 `INSTALL_RL_GAMES=1`일 때만 설치
+- 선택 RL 라이브러리: `rl_games`는 `INSTALL_RL_GAMES=1`일 때만 별도 clone 후 `--no-build-isolation`으로 설치
 
 ## 설치 확인
 
