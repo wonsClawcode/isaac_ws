@@ -90,10 +90,12 @@ def resolve_checkpoint_path(cfg: DictConfig) -> Path:
 
 def app_launcher_args(cfg: DictConfig) -> dict[str, Any]:
     kit_args = str(getattr(cfg.runtime, "kit_args", "")).strip() or DEFAULT_KIT_ARGS
-    return {
+    hide_ui = bool(getattr(cfg.runtime, "hide_ui", bool(cfg.runtime.headless)))
+    experience = str(getattr(cfg.runtime, "experience", "")).strip()
+    launcher_args = {
         "headless": bool(cfg.runtime.headless),
         "enable_cameras": bool(cfg.runtime.enable_cameras or cfg.env.enable_cameras or cfg.run.record_video),
-        "hide_ui": bool(cfg.runtime.headless),
+        "hide_ui": hide_ui,
         "livestream": 0,
         "device": str(cfg.runtime.device),
         "distributed": bool(cfg.runtime.distributed),
@@ -103,6 +105,9 @@ def app_launcher_args(cfg: DictConfig) -> dict[str, Any]:
         # and has proven unstable on some container/runtime combinations.
         "multi_gpu": False,
     }
+    if experience:
+        launcher_args["experience"] = experience
+    return launcher_args
 
 
 def runtime_device(cfg: DictConfig, app_launcher: Any) -> str:

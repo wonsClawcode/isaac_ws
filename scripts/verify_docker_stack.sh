@@ -5,8 +5,23 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/docker_common.sh"
 
 VERIFY_SIM_APP_SMOKE="${VERIFY_SIM_APP_SMOKE:-0}"
 VERIFY_APP_LAUNCHER_SMOKE="${VERIFY_APP_LAUNCHER_SMOKE:-0}"
+VERIFY_APP_LAUNCHER_HEADLESS="${VERIFY_APP_LAUNCHER_HEADLESS:-1}"
+VERIFY_APP_LAUNCHER_HIDE_UI="${VERIFY_APP_LAUNCHER_HIDE_UI:-0}"
+VERIFY_APP_LAUNCHER_ENABLE_CAMERAS="${VERIFY_APP_LAUNCHER_ENABLE_CAMERAS:-0}"
+VERIFY_APP_LAUNCHER_EXPERIENCE="${VERIFY_APP_LAUNCHER_EXPERIENCE:-}"
 VERIFY_SMOKE_TIMEOUT_SEC="${VERIFY_SMOKE_TIMEOUT_SEC:-90}"
 VERIFY_APP_LAUNCHER_KIT_ARGS="${VERIFY_APP_LAUNCHER_KIT_ARGS:---/rtx/verifyDriverVersion/enabled=false --/renderer/multiGpu/enabled=false --/renderer/multiGpu/autoEnable=false}"
+
+RUN_DISPLAY=""
+RUN_HEADLESS=1
+RUN_GUI=0
+
+if [[ "${VERIFY_APP_LAUNCHER_SMOKE}" == "1" && "${VERIFY_APP_LAUNCHER_HEADLESS}" != "1" ]]; then
+  enable_gui_runtime
+  RUN_DISPLAY="${DISPLAY}"
+  RUN_HEADLESS=0
+  RUN_GUI=1
+fi
 
 PYTHON_CODE=$(cat <<'PY'
 import os
@@ -69,19 +84,29 @@ if not run_smoke and not run_app_launcher_smoke:
 elif run_app_launcher_smoke:
     from isaaclab.app import AppLauncher
 
+    headless = os.getenv("VERIFY_APP_LAUNCHER_HEADLESS", "1") == "1"
+    hide_ui = os.getenv("VERIFY_APP_LAUNCHER_HIDE_UI", "0") == "1"
+    enable_cameras = os.getenv("VERIFY_APP_LAUNCHER_ENABLE_CAMERAS", "0") == "1"
+    experience = os.getenv("VERIFY_APP_LAUNCHER_EXPERIENCE", "").strip()
     kit_args = os.getenv("VERIFY_APP_LAUNCHER_KIT_ARGS", "").strip()
+    print(f"app_launcher_headless={headless}")
+    print(f"app_launcher_hide_ui={hide_ui}")
+    print(f"app_launcher_enable_cameras={enable_cameras}")
+    print(f"app_launcher_experience={experience or 'default'}")
     print(f"app_launcher_kit_args={kit_args}")
-    app_launcher = AppLauncher(
-        {
-            "headless": True,
-            "enable_cameras": False,
-            "device": "cuda:0",
-            "distributed": False,
-            "multi_gpu": False,
-            "fast_shutdown": True,
-            "kit_args": kit_args,
-        }
-    )
+    app_launcher_args = {
+        "headless": headless,
+        "hide_ui": hide_ui,
+        "enable_cameras": enable_cameras,
+        "device": "cuda:0",
+        "distributed": False,
+        "multi_gpu": False,
+        "fast_shutdown": True,
+        "kit_args": kit_args,
+    }
+    if experience:
+        app_launcher_args["experience"] = experience
+    app_launcher = AppLauncher(app_launcher_args)
     print("app_launcher_created=true")
     simulation_app = app_launcher.app
     try:
@@ -104,11 +129,15 @@ PY
 )
 
 docker_compose run --rm -T \
-  -e DISPLAY= \
-  -e HEADLESS=1 \
-  -e ISAAC_WS_GUI=0 \
+  -e DISPLAY="${RUN_DISPLAY}" \
+  -e HEADLESS="${RUN_HEADLESS}" \
+  -e ISAAC_WS_GUI="${RUN_GUI}" \
   -e VERIFY_SIM_APP_SMOKE="${VERIFY_SIM_APP_SMOKE}" \
   -e VERIFY_APP_LAUNCHER_SMOKE="${VERIFY_APP_LAUNCHER_SMOKE}" \
+  -e VERIFY_APP_LAUNCHER_HEADLESS="${VERIFY_APP_LAUNCHER_HEADLESS}" \
+  -e VERIFY_APP_LAUNCHER_HIDE_UI="${VERIFY_APP_LAUNCHER_HIDE_UI}" \
+  -e VERIFY_APP_LAUNCHER_ENABLE_CAMERAS="${VERIFY_APP_LAUNCHER_ENABLE_CAMERAS}" \
+  -e VERIFY_APP_LAUNCHER_EXPERIENCE="${VERIFY_APP_LAUNCHER_EXPERIENCE}" \
   -e VERIFY_APP_LAUNCHER_KIT_ARGS="${VERIFY_APP_LAUNCHER_KIT_ARGS}" \
   isaac-lab /isaac-sim/python.sh -c "${PYTHON_CODE}"
 

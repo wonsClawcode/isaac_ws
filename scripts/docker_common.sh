@@ -42,7 +42,7 @@ requires_gui_runtime() {
   local arg
   for arg in "$@"; do
     case "${arg}" in
-      runtime=gui_debug|runtime.headless=false|runtime.ui_mode=x11)
+      runtime=gui_debug|runtime=x11_compat|runtime.headless=false|runtime.ui_mode=x11)
         return 0
         ;;
     esac
