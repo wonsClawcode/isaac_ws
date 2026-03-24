@@ -28,6 +28,15 @@ def dist_location(dist_name: str) -> str:
         return "not-installed"
 
 
+build_info_path = Path("/etc/isaac_ws-image-info")
+if build_info_path.exists():
+    for line in build_info_path.read_text(encoding="utf-8").splitlines():
+        if "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        print(f"image_{key.lower()}={value}")
+
+
 isaacsim_version = version_or_fallback("isaacsim")
 if isaacsim_version == "not-installed":
     version_file = Path("/isaac-sim/VERSION")

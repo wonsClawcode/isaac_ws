@@ -22,6 +22,18 @@
 ./scripts/docker_build.sh
 ```
 
+기본 빌드 로그는 BuildKit `auto` 모드라서 단계 중심 UI로 보인다. 상세 step 로그를 모두 보고 싶으면 아래처럼 `plain`으로 바꾼다.
+
+```bash
+BUILDKIT_PROGRESS=plain ./scripts/docker_build.sh
+```
+
+기본 build 경로는 `docker build` 직접 호출이다. 이전에 일부 회사 머신에서 `docker compose build`가 내부 buildx container 생성 단계에 멈춘 적이 있어서 기본값을 이렇게 잡아뒀다. 그래도 compose build와 같은 흐름이 필요하면 아래처럼 바꿀 수 있다.
+
+```bash
+DOCKER_BUILD_METHOD=compose ./scripts/docker_build.sh
+```
+
 런타임 import 충돌을 수정한 뒤에는 캐시된 레이어를 재사용하지 않도록 아래처럼 재빌드하는 편이 안전하다.
 
 ```bash
@@ -46,6 +58,8 @@
 ```
 
 이 스크립트는 기본적으로 컨테이너 안에서 `isaacsim`, `isaaclab`, `isaaclab_tasks`, `isaaclab_rl`, `rsl-rl-lib`, `onnxscript`, `torch` 설치 상태를 경량 검증한다.
+
+추가로 이미지에 기록된 `Isaac Sim version`, `Isaac Lab git ref`, `실제 commit`, `rl_games 설치 여부`도 `image_*` prefix로 같이 출력한다.
 
 - `VERIFY_SIM_APP_SMOKE=1 ./scripts/verify_docker_stack.sh`
   공식 `isaac-sim.compatibility_check.sh --/app/quitAfter=10 --no-window --reset-user`를 실행한다.
