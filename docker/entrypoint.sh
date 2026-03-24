@@ -3,6 +3,7 @@ set -euo pipefail
 
 WORKSPACE_ROOT="${ISAAC_WS_ROOT:-/workspace/isaac_ws}"
 ISAAC_PYTHON="${ISAACSIM_PYTHON_EXE:-/isaac-sim/python.sh}"
+ISAACLAB_PYTHON="${ISAACLAB_PYTHON_EXE:-/usr/local/bin/isaaclabpy}"
 
 if [[ ! -x "${ISAAC_PYTHON}" ]]; then
   ISAAC_PYTHON="/isaac-sim/python.sh"
@@ -15,6 +16,7 @@ fi
 
 export ISAACSIM_PATH="/isaac-sim"
 export ISAACSIM_PYTHON_EXE="${ISAAC_PYTHON}"
+export ISAACLAB_PYTHON_EXE="${ISAACLAB_PYTHON}"
 export PYTHONPATH="${WORKSPACE_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
 
 mkdir -p \
@@ -23,7 +25,7 @@ mkdir -p \
   "${WORKSPACE_ROOT}/checkpoints"
 
 if [[ -f "${WORKSPACE_ROOT}/pyproject.toml" ]]; then
-  "${ISAAC_PYTHON}" -m pip install -e "${WORKSPACE_ROOT}" --no-deps >/tmp/isaac_ws_pip.log 2>&1 || {
+  "${ISAACLAB_PYTHON}" -m pip install -e "${WORKSPACE_ROOT}" --no-deps >/tmp/isaac_ws_pip.log 2>&1 || {
     cat /tmp/isaac_ws_pip.log
     exit 1
   }

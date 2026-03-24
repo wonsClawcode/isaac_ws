@@ -3,4 +3,4 @@ set -euo pipefail
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/docker_common.sh"
 
-docker_compose run --rm isaac-lab /isaac-sim/python.sh -m isaaclab --generate-vscode-settings
+docker_compose run --rm isaac-lab bash -lc 'cd /opt/IsaacLab && ./isaaclab.sh --generate-vscode-settings'

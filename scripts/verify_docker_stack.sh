@@ -65,7 +65,7 @@ if isaacsim_version == "not-installed":
         isaacsim_version = version_file.read_text(encoding="utf-8").strip()
 
 print(f"isaacsim={isaacsim_version}")
-print(f"isaaclab={version('isaaclab')}")
+print(f"isaaclab={version_or_fallback('isaaclab', 'source-managed')}")
 print(f"isaaclab_dist={dist_location('isaaclab')}")
 print(f"isaaclab_tasks_version={version_or_fallback('isaaclab_tasks')}")
 print(f"isaaclab_tasks_dist={dist_location('isaaclab_tasks')}")
@@ -145,7 +145,7 @@ docker_compose run --rm -T \
   -e VERIFY_APP_LAUNCHER_ENABLE_CAMERAS="${VERIFY_APP_LAUNCHER_ENABLE_CAMERAS}" \
   -e VERIFY_APP_LAUNCHER_EXPERIENCE="${VERIFY_APP_LAUNCHER_EXPERIENCE}" \
   -e VERIFY_APP_LAUNCHER_KIT_ARGS="${VERIFY_APP_LAUNCHER_KIT_ARGS}" \
-  isaac-lab /isaac-sim/python.sh -c "${PYTHON_CODE}"
+  isaac-lab /usr/local/bin/isaaclabpy -c "${PYTHON_CODE}"
 
 if [[ "${VERIFY_SIM_APP_SMOKE}" == "1" ]]; then
   docker_compose run --rm -T \

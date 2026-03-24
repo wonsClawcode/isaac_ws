@@ -22,6 +22,7 @@ ENV LANG=C.UTF-8 \
     PYTHONUNBUFFERED=1 \
     ISAACSIM_PATH=/isaac-sim \
     ISAACSIM_PYTHON_EXE=/isaac-sim/python.sh \
+    ISAACLAB_PYTHON_EXE=/usr/local/bin/isaaclabpy \
     ISAAC_WS_ROOT=/workspace/isaac_ws \
     ISAACLAB_ROOT=/opt/IsaacLab \
     ACCEPT_EULA=Y \
@@ -91,16 +92,28 @@ RUN "${ISAACSIM_PYTHON_EXE}" -m pip install -e /tmp/project
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh \
-    && printf '#!/bin/bash\nexec /isaac-sim/python.sh "$@"\n' > /usr/local/bin/isaacpy \
-    && chmod +x /usr/local/bin/isaacpy \
+    && cat > /usr/local/bin/isaaclabpy <<'EOF'
+#!/bin/bash
+set -euo pipefail
+cd "${ISAACLAB_ROOT:-/opt/IsaacLab}"
+exec ./isaaclab.sh -p "$@"
+EOF
+    && chmod +x /usr/local/bin/isaaclabpy \
+    && cat > /usr/local/bin/isaacsimpy <<'EOF'
+#!/bin/bash
+exec /isaac-sim/python.sh "$@"
+EOF
+    && chmod +x /usr/local/bin/isaacsimpy \
     && cat > /etc/profile.d/isaac_ws.sh <<'EOF'
 export ISAACSIM_PATH="${ISAACSIM_PATH:-/isaac-sim}"
 export ISAACSIM_PYTHON_EXE="${ISAACSIM_PYTHON_EXE:-/isaac-sim/python.sh}"
+export ISAACLAB_PYTHON_EXE="${ISAACLAB_PYTHON_EXE:-/usr/local/bin/isaaclabpy}"
 export ISAAC_WS_ROOT="${ISAAC_WS_ROOT:-/workspace/isaac_ws}"
 export PYTHONPATH="${ISAAC_WS_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
-alias isaacpy='/isaac-sim/python.sh'
-alias python='/isaac-sim/python.sh'
-alias python3='/isaac-sim/python.sh'
+alias isaacpy='/usr/local/bin/isaaclabpy'
+alias python='/usr/local/bin/isaaclabpy'
+alias python3='/usr/local/bin/isaaclabpy'
+alias simpy='/usr/local/bin/isaacsimpy'
 alias islab='cd /opt/IsaacLab'
 alias iws='cd /workspace/isaac_ws'
 EOF

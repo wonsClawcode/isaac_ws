@@ -81,7 +81,7 @@ Kit 런타임 충돌이 반복되면 먼저 [`/Users/wonnerky/workspace/isaac_ws
 ./scripts/docker_shell.sh
 ```
 
-컨테이너 안에서 기본 Python 실행 경로는 `/isaac-sim/python.sh`다. interactive shell에서는 `python`, `python3`, `isaacpy` alias가 모두 이 경로를 가리키도록 맞춰둔다.
+컨테이너 안에서 기본 Python 실행 경로는 `/usr/local/bin/isaaclabpy`다. 이 래퍼는 `IsaacLab/isaaclab.sh -p`를 통해 Isaac Sim Python과 Isaac Lab 환경 설정을 함께 적용한다. interactive shell에서는 `python`, `python3`, `isaacpy` alias가 모두 이 경로를 가리킨다. raw Isaac Sim Python이 필요하면 `simpy` alias를 사용한다.
 
 ## Isaac Sim 실행
 

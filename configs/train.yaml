@@ -19,7 +19,7 @@ run:
   mode: execute
   actor: train
   python_entrypoint: isaac_ws.train
-  container_python: /isaac-sim/python.sh
+  container_python: /usr/local/bin/isaaclabpy
   output_root: ${oc.env:ISAAC_WS_OUTPUT_ROOT,${hydra:runtime.cwd}/runs}
   log_root: ${oc.env:ISAAC_WS_LOG_ROOT,${hydra:runtime.cwd}/logs}
   checkpoint_root: ${oc.env:ISAAC_WS_CHECKPOINT_ROOT,${hydra:runtime.cwd}/checkpoints}

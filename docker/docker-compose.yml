@@ -33,6 +33,7 @@ services:
       TERM: ${TERM:-xterm}
       ISAACSIM_PATH: /isaac-sim
       ISAACSIM_PYTHON_EXE: /isaac-sim/python.sh
+      ISAACLAB_PYTHON_EXE: /usr/local/bin/isaaclabpy
       NVIDIA_DRIVER_CAPABILITIES: ${NVIDIA_DRIVER_CAPABILITIES:-all}
       NVIDIA_VISIBLE_DEVICES: ${NVIDIA_VISIBLE_DEVICES:-all}
       ISAAC_WS_OUTPUT_ROOT: ${ISAAC_WS_OUTPUT_ROOT:-/workspace/isaac_ws/runs}

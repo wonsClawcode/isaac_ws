@@ -99,6 +99,8 @@ INSTALL_RL_GAMES=1 ./scripts/docker_build.sh --no-cache
 ./scripts/run_isaacsim.sh
 ```
 
+컨테이너 안에서 `python`, `python3`, `isaacpy`는 모두 `/usr/local/bin/isaaclabpy`를 가리킨다. 이 래퍼는 `isaaclab.sh -p`를 사용해 Isaac Lab 실행 환경을 먼저 맞춘다. raw Isaac Sim Python이 필요하면 `simpy`를 사용한다.
+
 GUI 디버그가 필요하면 X11 접근을 열고 GUI 전용 래퍼를 사용한다.
 
 ```bash

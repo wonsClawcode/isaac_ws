@@ -3,4 +3,4 @@ set -euo pipefail
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/docker_common.sh"
 
-docker_compose run --rm isaac-lab /isaac-sim/python.sh tools/check_config.py "$@"
+docker_compose run --rm isaac-lab /usr/local/bin/isaaclabpy tools/check_config.py "$@"
