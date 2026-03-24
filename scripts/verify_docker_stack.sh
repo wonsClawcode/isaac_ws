@@ -28,8 +28,6 @@ import os
 from importlib.metadata import PackageNotFoundError, distribution, version
 from pathlib import Path
 
-import torch
-
 def version_or_fallback(dist_name: str, fallback: str = "not-installed") -> str:
     try:
         return version(dist_name)
@@ -40,6 +38,13 @@ def version_or_fallback(dist_name: str, fallback: str = "not-installed") -> str:
 def dist_location(dist_name: str) -> str:
     try:
         return str(distribution(dist_name).locate_file(""))
+    except PackageNotFoundError:
+        return "not-installed"
+
+
+def package_file(dist_name: str, relative_path: str) -> str:
+    try:
+        return str(distribution(dist_name).locate_file(relative_path))
     except PackageNotFoundError:
         return "not-installed"
 
@@ -68,8 +73,9 @@ print(f"isaaclab_rl_version={version_or_fallback('isaaclab_rl')}")
 print(f"isaaclab_rl_dist={dist_location('isaaclab_rl')}")
 print(f"rsl_rl_lib={version('rsl-rl-lib')}")
 print(f"onnxscript={version('onnxscript')}")
-print(f"torch={torch.__version__}")
-print(f"torch_path={torch.__file__}")
+print(f"torch={version_or_fallback('torch')}")
+print(f"torch_dist={dist_location('torch')}")
+print(f"torch_path={package_file('torch', 'torch/__init__.py')}")
 
 import isaacsim
 
