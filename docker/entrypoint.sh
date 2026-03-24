@@ -4,7 +4,16 @@ set -euo pipefail
 WORKSPACE_ROOT="${ISAAC_WS_ROOT:-/workspace/isaac_ws}"
 ISAAC_PYTHON="${ISAACSIM_PYTHON_EXE:-/isaac-sim/python.sh}"
 
-export ISAACSIM_PATH="${ISAACSIM_PATH:-/isaac-sim}"
+if [[ ! -x "${ISAAC_PYTHON}" ]]; then
+  ISAAC_PYTHON="/isaac-sim/python.sh"
+fi
+
+if [[ ! -x "${ISAAC_PYTHON}" ]]; then
+  echo "Isaac Sim python executable not found: ${ISAAC_PYTHON}" >&2
+  exit 1
+fi
+
+export ISAACSIM_PATH="/isaac-sim"
 export ISAACSIM_PYTHON_EXE="${ISAAC_PYTHON}"
 export PYTHONPATH="${WORKSPACE_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
 

@@ -109,9 +109,12 @@ export ISAACSIM_PYTHON_EXE="${ISAACSIM_PYTHON_EXE:-/isaac-sim/python.sh}"
 export ISAAC_WS_ROOT="${ISAAC_WS_ROOT:-/workspace/isaac_ws}"
 export PYTHONPATH="${ISAAC_WS_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
 alias isaacpy='/isaac-sim/python.sh'
+alias python='/isaac-sim/python.sh'
+alias python3='/isaac-sim/python.sh'
 alias islab='cd /opt/IsaacLab'
 alias iws='cd /workspace/isaac_ws'
 EOF
+    && printf '\nsource /etc/profile.d/isaac_ws.sh\n' >> /root/.bashrc
 
 LABEL org.opencontainers.image.title="isaac-ws" \
       org.opencontainers.image.description="Isaac Sim 5.1.0 + Isaac Lab source install workspace" \

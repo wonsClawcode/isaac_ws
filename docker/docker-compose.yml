@@ -33,8 +33,8 @@ services:
       ISAAC_WS_GUI: ${ISAAC_WS_GUI:-0}
       QT_X11_NO_MITSHM: ${QT_X11_NO_MITSHM:-1}
       TERM: ${TERM:-xterm}
-      ISAACSIM_PATH: ${ISAACSIM_PATH:-/isaac-sim}
-      ISAACSIM_PYTHON_EXE: ${ISAACSIM_PYTHON_EXE:-/isaac-sim/python.sh}
+      ISAACSIM_PATH: /isaac-sim
+      ISAACSIM_PYTHON_EXE: /isaac-sim/python.sh
       NVIDIA_DRIVER_CAPABILITIES: ${NVIDIA_DRIVER_CAPABILITIES:-all}
       NVIDIA_VISIBLE_DEVICES: ${NVIDIA_VISIBLE_DEVICES:-all}
       ISAAC_WS_OUTPUT_ROOT: ${ISAAC_WS_OUTPUT_ROOT:-/workspace/isaac_ws/runs}
