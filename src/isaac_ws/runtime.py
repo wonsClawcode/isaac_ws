@@ -13,6 +13,12 @@ from isaac_ws.experiment_meta import build_experiment_id, get_seed
 from isaac_ws.plan import build_execution_plan, write_plan_artifact
 from isaac_ws.task_registry import register_local_tasks
 
+DEFAULT_KIT_ARGS = (
+    "--/rtx/verifyDriverVersion/enabled=false "
+    "--/renderer/multiGpu/enabled=false "
+    "--/renderer/multiGpu/autoEnable=false"
+)
+
 
 def project_root() -> Path:
     return Path(__file__).resolve().parents[2]
@@ -83,6 +89,7 @@ def resolve_checkpoint_path(cfg: DictConfig) -> Path:
 
 
 def app_launcher_args(cfg: DictConfig) -> dict[str, Any]:
+    kit_args = str(getattr(cfg.runtime, "kit_args", "")).strip() or DEFAULT_KIT_ARGS
     return {
         "headless": bool(cfg.runtime.headless),
         "enable_cameras": bool(cfg.runtime.enable_cameras or cfg.env.enable_cameras or cfg.run.record_video),
@@ -90,6 +97,8 @@ def app_launcher_args(cfg: DictConfig) -> dict[str, Any]:
         "livestream": 0,
         "device": str(cfg.runtime.device),
         "distributed": bool(cfg.runtime.distributed),
+        "kit_args": kit_args,
+        "fast_shutdown": True,
         # Isaac Lab RL uses one process per GPU for scale-out; renderer multi-GPU is unnecessary here
         # and has proven unstable on some container/runtime combinations.
         "multi_gpu": False,
@@ -100,6 +109,15 @@ def runtime_device(cfg: DictConfig, app_launcher: Any) -> str:
     if bool(cfg.runtime.distributed):
         return f"cuda:{app_launcher.local_rank}"
     return str(cfg.runtime.device)
+
+
+def close_simulation_app(cfg: DictConfig, simulation_app: Any) -> None:
+    # There are upstream reports of headless Kit teardown segfaults on some driver/runtime combinations.
+    # In short-lived CLI processes, letting the process exit is a safer default than forcing close().
+    if bool(cfg.runtime.headless) and os.environ.get("ISAAC_WS_FORCE_HEADLESS_CLOSE", "0") != "1":
+        print("simulation_app_close=skipped (set ISAAC_WS_FORCE_HEADLESS_CLOSE=1 to force close in headless mode)")
+        return
+    simulation_app.close()
 
 
 def apply_env_overrides(cfg: DictConfig, env_cfg: Any, app_launcher: Any) -> Any:

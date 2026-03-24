@@ -6,6 +6,7 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/docker_common.sh"
 VERIFY_SIM_APP_SMOKE="${VERIFY_SIM_APP_SMOKE:-0}"
 VERIFY_APP_LAUNCHER_SMOKE="${VERIFY_APP_LAUNCHER_SMOKE:-0}"
 VERIFY_SMOKE_TIMEOUT_SEC="${VERIFY_SMOKE_TIMEOUT_SEC:-90}"
+VERIFY_APP_LAUNCHER_KIT_ARGS="${VERIFY_APP_LAUNCHER_KIT_ARGS:---/rtx/verifyDriverVersion/enabled=false --/renderer/multiGpu/enabled=false --/renderer/multiGpu/autoEnable=false}"
 
 PYTHON_CODE=$(cat <<'PY'
 import os
@@ -68,6 +69,8 @@ if not run_smoke and not run_app_launcher_smoke:
 elif run_app_launcher_smoke:
     from isaaclab.app import AppLauncher
 
+    kit_args = os.getenv("VERIFY_APP_LAUNCHER_KIT_ARGS", "").strip()
+    print(f"app_launcher_kit_args={kit_args}")
     app_launcher = AppLauncher(
         {
             "headless": True,
@@ -75,13 +78,19 @@ elif run_app_launcher_smoke:
             "device": "cuda:0",
             "distributed": False,
             "multi_gpu": False,
+            "fast_shutdown": True,
+            "kit_args": kit_args,
         }
     )
+    print("app_launcher_created=true")
     simulation_app = app_launcher.app
     try:
         from pxr import Usd
+        print("app_launcher_import_pxr=true")
         import isaaclab_tasks
+        print("app_launcher_import_isaaclab_tasks=true")
         import isaaclab_rl.rsl_rl as isaaclab_rsl_rl
+        print("app_launcher_import_isaaclab_rl=true")
         from isaacsim.core.prims import Articulation
 
         print(f"pxr_usd={Usd.__module__}")
@@ -90,7 +99,7 @@ elif run_app_launcher_smoke:
         print(f"isaacsim_core_prims={Articulation.__module__}")
         print("app_launcher_smoke=passed")
     finally:
-        simulation_app.close()
+        print("simulation_app_close=skipped in verify smoke")
 PY
 )
 
@@ -100,6 +109,7 @@ docker_compose run --rm -T \
   -e ISAAC_WS_GUI=0 \
   -e VERIFY_SIM_APP_SMOKE="${VERIFY_SIM_APP_SMOKE}" \
   -e VERIFY_APP_LAUNCHER_SMOKE="${VERIFY_APP_LAUNCHER_SMOKE}" \
+  -e VERIFY_APP_LAUNCHER_KIT_ARGS="${VERIFY_APP_LAUNCHER_KIT_ARGS}" \
   isaac-lab /isaac-sim/python.sh -c "${PYTHON_CODE}"
 
 if [[ "${VERIFY_SIM_APP_SMOKE}" == "1" ]]; then

@@ -8,6 +8,7 @@ from omegaconf import DictConfig, OmegaConf
 
 from isaac_ws.runtime import (
     app_launcher_args,
+    close_simulation_app,
     ensure_rsl_rl,
     make_env_and_agent_cfg,
     print_plan_summary,
@@ -74,7 +75,7 @@ def main(cfg: DictConfig) -> None:
         print(f"export_dir: {export_dir}")
         env.close()
     finally:
-        simulation_app.close()
+        close_simulation_app(cfg, simulation_app)
 
 
 if __name__ == "__main__":

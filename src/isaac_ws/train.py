@@ -7,6 +7,7 @@ from omegaconf import DictConfig, OmegaConf
 
 from isaac_ws.runtime import (
     app_launcher_args,
+    close_simulation_app,
     create_log_dir,
     ensure_rsl_rl,
     make_env_and_agent_cfg,
@@ -78,7 +79,7 @@ def main(cfg: DictConfig) -> None:
         runner.learn(num_learning_iterations=agent_cfg.max_iterations, init_at_random_ep_len=True)
         env.close()
     finally:
-        simulation_app.close()
+        close_simulation_app(cfg, simulation_app)
 
 
 if __name__ == "__main__":
