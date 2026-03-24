@@ -9,6 +9,18 @@ if [[ -f "${ROOT_DIR}/.env" ]]; then
   set +a
 fi
 
+ISAACSIM_BASE_IMAGE="${ISAACSIM_BASE_IMAGE:-nvcr.io/nvidia/isaac-sim}"
+ISAACSIM_VERSION="${ISAACSIM_VERSION:-5.1.0}"
+
+if [[ "${ISAACSIM_BASE_IMAGE##*/}" == *:* ]]; then
+  if [[ -z "${ISAACSIM_VERSION:-}" || "${ISAACSIM_VERSION}" == "5.1.0" ]]; then
+    ISAACSIM_VERSION="${ISAACSIM_BASE_IMAGE##*:}"
+    ISAACSIM_BASE_IMAGE="${ISAACSIM_BASE_IMAGE%:*}"
+  else
+    warn "ISAACSIM_BASE_IMAGE already contains a tag and ISAACSIM_VERSION is also set."
+  fi
+fi
+
 warn() {
   printf '[warn] %s\n' "$1"
 }
@@ -38,7 +50,7 @@ if command -v docker >/dev/null 2>&1; then
   info "docker compose version: $(docker compose version --short 2>/dev/null || echo unknown)"
 fi
 
-info "isaac sim base image: ${ISAACSIM_BASE_IMAGE:-nvcr.io/nvidia/isaac-sim:5.1.0}"
+info "isaac sim base image: ${ISAACSIM_BASE_IMAGE}:${ISAACSIM_VERSION}"
 
 if command -v nvidia-smi >/dev/null 2>&1; then
   nvidia-smi || true

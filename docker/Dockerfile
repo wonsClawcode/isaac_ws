@@ -114,7 +114,8 @@ alias python3='/isaac-sim/python.sh'
 alias islab='cd /opt/IsaacLab'
 alias iws='cd /workspace/isaac_ws'
 EOF
-    && printf '\nsource /etc/profile.d/isaac_ws.sh\n' >> /root/.bashrc
+
+RUN printf '\nsource /etc/profile.d/isaac_ws.sh\n' >> /root/.bashrc
 
 LABEL org.opencontainers.image.title="isaac-ws" \
       org.opencontainers.image.description="Isaac Sim 5.1.0 + Isaac Lab source install workspace" \
