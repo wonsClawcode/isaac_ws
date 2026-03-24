@@ -11,8 +11,6 @@ ARG ISAACSIM_BASE_IMAGE
 ARG ISAACSIM_VERSION
 ARG ISAACLAB_GIT_URL=https://github.com/isaac-sim/IsaacLab.git
 ARG ISAACLAB_GIT_REF=v2.3.2
-ARG RL_GAMES_GIT_URL=https://github.com/isaac-sim/rl_games.git
-ARG RL_GAMES_GIT_REF=python3.11
 ARG INSTALL_RL_GAMES=0
 
 ENV LANG=C.UTF-8 \
@@ -26,7 +24,6 @@ ENV LANG=C.UTF-8 \
     ISAACSIM_PYTHON_EXE=/isaac-sim/python.sh \
     ISAAC_WS_ROOT=/workspace/isaac_ws \
     ISAACLAB_ROOT=/opt/IsaacLab \
-    RL_GAMES_ROOT=/opt/rl_games \
     ACCEPT_EULA=Y \
     PRIVACY_CONSENT=Y \
     OMNI_KIT_ACCEPT_EULA=YES \
@@ -60,27 +57,22 @@ COPY docker/requirements.runtime.txt /tmp/requirements.runtime.txt
 
 RUN git clone --branch "${ISAACLAB_GIT_REF}" --depth 1 "${ISAACLAB_GIT_URL}" "${ISAACLAB_ROOT}" \
     && ln -sfn "${ISAACSIM_PATH}" "${ISAACLAB_ROOT}/_isaac_sim" \
+    && cd "${ISAACLAB_ROOT}" \
+    && ./isaaclab.sh --install none \
+    && ./isaaclab.sh --install rsl_rl \
+    && if [ "${INSTALL_RL_GAMES}" = "1" ]; then \
+         ./isaaclab.sh --install rl_games; \
+       else \
+         echo "Skipping optional rl_games install"; \
+       fi \
     && if grep -Eq '^[[:space:]]*[^#[:space:]]' /tmp/requirements.runtime.txt; then \
          "${ISAACSIM_PYTHON_EXE}" -m pip install -r /tmp/requirements.runtime.txt; \
        else \
          echo "Skipping additional runtime requirements"; \
-       fi \
-    && "${ISAACSIM_PYTHON_EXE}" -m pip install --no-build-isolation -e "${ISAACLAB_ROOT}/source/isaaclab" \
-    && "${ISAACSIM_PYTHON_EXE}" -m pip install --no-build-isolation -e "${ISAACLAB_ROOT}/source/isaaclab_assets" \
-    && "${ISAACSIM_PYTHON_EXE}" -m pip install --no-build-isolation -e "${ISAACLAB_ROOT}/source/isaaclab_tasks" \
-    && "${ISAACSIM_PYTHON_EXE}" -m pip install --no-build-isolation -e "${ISAACLAB_ROOT}/source/isaaclab_rl[rsl-rl]" \
-    && if [ "${INSTALL_RL_GAMES}" = "1" ]; then \
-         git clone --branch "${RL_GAMES_GIT_REF}" --depth 1 "${RL_GAMES_GIT_URL}" "${RL_GAMES_ROOT}" \
-         && "${ISAACSIM_PYTHON_EXE}" -m pip install "poetry-core>=1.0.0" gym \
-         && "${ISAACSIM_PYTHON_EXE}" -m pip install --no-build-isolation -e "${RL_GAMES_ROOT}"; \
-       else \
-         echo "Skipping optional rl_games install"; \
-         mkdir -p "${RL_GAMES_ROOT}"; \
        fi
 
 RUN ISAACLAB_GIT_COMMIT="$(git -C "${ISAACLAB_ROOT}" rev-parse HEAD)" \
     && ISAACLAB_GIT_DESCRIBE="$(git -C "${ISAACLAB_ROOT}" describe --tags --always)" \
-    && RL_GAMES_GIT_COMMIT="$(git -C "${RL_GAMES_ROOT}" rev-parse HEAD 2>/dev/null || echo not-installed)" \
     && cat > /etc/isaac_ws-image-info <<EOF
 ISAACSIM_BASE_IMAGE=${ISAACSIM_BASE_IMAGE}
 ISAACSIM_VERSION=${ISAACSIM_VERSION}
@@ -88,9 +80,7 @@ ISAACLAB_GIT_URL=${ISAACLAB_GIT_URL}
 ISAACLAB_GIT_REF=${ISAACLAB_GIT_REF}
 ISAACLAB_GIT_COMMIT=${ISAACLAB_GIT_COMMIT}
 ISAACLAB_GIT_DESCRIBE=${ISAACLAB_GIT_DESCRIBE}
-RL_GAMES_GIT_URL=${RL_GAMES_GIT_URL}
-RL_GAMES_GIT_REF=${RL_GAMES_GIT_REF}
-RL_GAMES_GIT_COMMIT=${RL_GAMES_GIT_COMMIT}
+RL_GAMES_INSTALL_METHOD=isaaclab.sh
 INSTALL_RL_GAMES=${INSTALL_RL_GAMES}
 EOF
 

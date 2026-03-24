@@ -45,16 +45,23 @@ DOCKER_BUILD_METHOD=compose ./scripts/docker_build.sh
 이 이미지는 아래 레이어를 사용한다.
 
 - 베이스: `nvcr.io/nvidia/isaac-sim:5.1.0`
-- Isaac Lab: `https://github.com/isaac-sim/IsaacLab.git` 의 `v2.3.2` tag를 clone해서 source install
+- Isaac Lab: `https://github.com/isaac-sim/IsaacLab.git` 의 `v2.3.2` tag를 clone한 뒤 공식 `isaaclab.sh --install` 경로로 설치
 - PyTorch: Isaac Sim 5.1.0 베이스 이미지에 포함된 번들을 사용
 - 기본 RL 라이브러리: `rsl_rl`
-- source install 패키지: `isaaclab`, `isaaclab_assets`, `isaaclab_tasks`, `isaaclab_rl[rsl-rl]`
-- 선택 RL 라이브러리: `rl_games`는 `INSTALL_RL_GAMES=1`일 때만 별도 clone 후 `poetry-core`를 추가하고 `--no-build-isolation`으로 설치
+- 기본 RL 라이브러리: `isaaclab.sh --install rsl_rl`
+- 선택 RL 라이브러리: `rl_games`는 `INSTALL_RL_GAMES=1`일 때만 `isaaclab.sh --install rl_games`
 
 ## 설치 확인
 
 ```bash
 ./scripts/verify_docker_stack.sh
+```
+
+우리 코드가 아니라 upstream Isaac Lab 공식 example 경로 자체를 검증하고 싶으면 아래 스크립트를 먼저 돌린다.
+
+```bash
+./scripts/prepare_x11.sh
+./scripts/verify_isaaclab_official.sh gui
 ```
 
 이 스크립트는 기본적으로 컨테이너 안에서 `isaacsim`, `isaaclab`, `isaaclab_tasks`, `isaaclab_rl`, `rsl-rl-lib`, `onnxscript`, `torch` 설치 상태를 경량 검증한다.

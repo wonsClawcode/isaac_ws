@@ -8,8 +8,6 @@ services:
         ISAACSIM_VERSION: ${ISAACSIM_VERSION:-5.1.0}
         ISAACLAB_GIT_URL: ${ISAACLAB_GIT_URL:-https://github.com/isaac-sim/IsaacLab.git}
         ISAACLAB_GIT_REF: ${ISAACLAB_GIT_REF:-v2.3.2}
-        RL_GAMES_GIT_URL: ${RL_GAMES_GIT_URL:-https://github.com/isaac-sim/rl_games.git}
-        RL_GAMES_GIT_REF: ${RL_GAMES_GIT_REF:-python3.11}
         INSTALL_RL_GAMES: ${INSTALL_RL_GAMES:-0}
     image: ${DOCKER_IMAGE:-isaac-ws:5.1.0-lab2.3.2}
     container_name: ${CONTAINER_NAME:-isaac-ws}
