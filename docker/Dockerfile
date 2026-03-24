@@ -91,20 +91,25 @@ COPY src /tmp/project/src
 RUN "${ISAACSIM_PYTHON_EXE}" -m pip install -e /tmp/project
 
 COPY docker/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh \
-    && cat > /usr/local/bin/isaaclabpy <<'EOF'
+RUN chmod +x /entrypoint.sh
+
+RUN cat > /usr/local/bin/isaaclabpy <<'EOF'
 #!/bin/bash
 set -euo pipefail
 cd "${ISAACLAB_ROOT:-/opt/IsaacLab}"
 exec ./isaaclab.sh -p "$@"
 EOF
-    && chmod +x /usr/local/bin/isaaclabpy \
-    && cat > /usr/local/bin/isaacsimpy <<'EOF'
+
+RUN chmod +x /usr/local/bin/isaaclabpy
+
+RUN cat > /usr/local/bin/isaacsimpy <<'EOF'
 #!/bin/bash
 exec /isaac-sim/python.sh "$@"
 EOF
-    && chmod +x /usr/local/bin/isaacsimpy \
-    && cat > /etc/profile.d/isaac_ws.sh <<'EOF'
+
+RUN chmod +x /usr/local/bin/isaacsimpy
+
+RUN cat > /etc/profile.d/isaac_ws.sh <<'EOF'
 export ISAACSIM_PATH="${ISAACSIM_PATH:-/isaac-sim}"
 export ISAACSIM_PYTHON_EXE="${ISAACSIM_PYTHON_EXE:-/isaac-sim/python.sh}"
 export ISAACLAB_PYTHON_EXE="${ISAACLAB_PYTHON_EXE:-/usr/local/bin/isaaclabpy}"
