@@ -7,8 +7,8 @@ terrain: plane
 workspace:
   hand_root_position_m: [0.0, 0.0, 0.82]
   hand_root_rotation_wxyz: [0.7071, -0.7071, 0.0, 0.0]
-  grasp_center_position_m: [0.0, 0.0, 0.94]
-  sphere_spawn_center_m: [0.0, 0.0, 0.96]
+  grasp_center_position_m: [0.0, 0.3, 0.94]
+  sphere_spawn_center_m: [0.0, 0.3, 0.96]
   sphere_spawn_jitter_m: [0.015, 0.015, 0.01]
 physics:
   timestep_s: 0.008333
