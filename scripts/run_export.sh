@@ -8,7 +8,7 @@ usage() {
 Usage: ./scripts/run_export.sh [hydra overrides...]
 
 Examples
-  ./scripts/run_export.sh task=grasp_sphere_shadow_hand_only checkpoint_path=/workspace/isaac_ws/checkpoints/rsl_rl/your_experiment/model.pt
+  ./scripts/run_export.sh task=grasp_sphere_shadow_hand_only checkpoint_path=/workspace/hand_isaac/checkpoints/rsl_rl/your_experiment/model.pt
 
 Notes
   - host에서 실행하면 persistent container를 자동으로 올리거나 재사용한다.

@@ -54,7 +54,7 @@ EXAMPLE_ALIAS="$(isaaclab_example_alias "${SCRIPT_PATH}")"
 EXAMPLE_SUMMARY="$(isaaclab_example_summary "${SCRIPT_PATH}")"
 
 echo "[INFO] Isaac Lab example (${MODE}): ${EXAMPLE_ALIAS} -> ${SCRIPT_PATH}"
-echo "[INFO] Expected scene: ${EXAMPLE_SUMMARY}"
+echo "[INFO] Scene: ${EXAMPLE_SUMMARY}"
 
 case "${MODE}" in
   gui)

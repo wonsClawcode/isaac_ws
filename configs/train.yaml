@@ -12,7 +12,7 @@ defaults:
   - _self_
 
 project:
-  name: isaac_ws
+  name: hand_isaac
   stage: shadow_hand_sphere_grasp
 
 run:

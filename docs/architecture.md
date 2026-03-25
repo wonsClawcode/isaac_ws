@@ -1,6 +1,6 @@
 # Architecture
 
-이 저장소는 세 개의 층을 분리하는 것을 목표로 한다.
+이 저장소는 실행 환경, 실험 설정, 학습 코드 세 층으로 나뉜다.
 
 ## 1. 인프라 층
 
@@ -15,7 +15,7 @@
 - `scripts/run_task_smoke.sh`
 - `docker/env/*.env`
 
-이 층은 어떤 머신에서 어떻게 같은 실행 환경을 확보할지를 담당한다. 현재는 `Isaac Sim 5.1.0 공식 컨테이너 + Isaac Lab git source install`을 기반으로 이미지를 빌드한다. 저사양 로컬에서는 정의만 유지하고, 실제 GPU 실행은 사내 Linux 머신에서 수행한다. GUI는 `docker-compose.gui.yml` 오버라이드로 분리해 headless 학습 경로와 충돌하지 않게 한다. 기본 compose service는 idle command로 유지되어 `docker_up.sh`로 지속형 dev container를 올리고 `docker_exec.sh`로 재진입할 수 있다.
+이 층은 같은 실행 환경을 재현하는 역할을 맡는다. 현재는 `Isaac Sim 5.1.0` 컨테이너 위에 `Isaac Lab` source install을 얹는 방식이다. GUI는 `docker-compose.gui.yml` 오버라이드로 분리하고, 기본 compose service는 idle 상태로 유지해 `docker_up.sh`와 `docker_exec.sh`로 재진입할 수 있게 했다.
 
 ## 2. 실험 정의 층
 
@@ -55,7 +55,7 @@ task=grasp_sphere_shadow_hand_only env=shadow_hand_palm_up_scaleout runtime=dist
 - `scripts/run_export.sh`
 - `deploy/ros2/`
 
-이 층은 실험 정의를 실제 실행 플랜과 배포 산출물로 연결한다. 현재는 Docker 컨테이너 안에서 `/isaac-sim/python.sh -m isaac_ws.launch ...`를 통해 실제 학습, 평가, 내보내기를 호출하는 구조이며, 분산 학습 runtime이면 내부에서 `torch.distributed.run`으로 재실행한다.
+이 층은 실험 정의를 실제 학습, 평가, export 실행으로 연결한다. 분산 runtime을 선택하면 내부에서 `torch.distributed.run`으로 다시 실행한다.
 
 ## 운영 원칙
 

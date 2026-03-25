@@ -49,7 +49,7 @@ def package_file(dist_name: str, relative_path: str) -> str:
         return "not-installed"
 
 
-build_info_path = Path("/etc/isaac_ws-image-info")
+build_info_path = Path("/etc/hand_isaac-image-info")
 if build_info_path.exists():
     for line in build_info_path.read_text(encoding="utf-8").splitlines():
         if "=" not in line:

@@ -25,7 +25,7 @@ ENV LANG=C.UTF-8 \
     ISAACSIM_PYTHON_EXE=/isaac-sim/python.sh \
     ISAACLAB_PYTHON_EXE=/usr/local/bin/isaaclabpy \
     ISAACLAB_SOURCE_PATHS=/opt/IsaacLab/source/isaaclab:/opt/IsaacLab/source/isaaclab_tasks:/opt/IsaacLab/source/isaaclab_rl:/opt/IsaacLab/source/isaaclab_assets \
-    ISAAC_WS_ROOT=/workspace/isaac_ws \
+    ISAAC_WS_ROOT=/workspace/hand_isaac \
     ISAACLAB_ROOT=/opt/IsaacLab \
     ACCEPT_EULA=Y \
     PRIVACY_CONSENT=Y \
@@ -87,7 +87,7 @@ RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
 
 RUN ISAACLAB_GIT_COMMIT="$(git -C "${ISAACLAB_ROOT}" rev-parse HEAD)" \
     && ISAACLAB_GIT_DESCRIBE="$(git -C "${ISAACLAB_ROOT}" describe --tags --always)" \
-    && cat > /etc/isaac_ws-image-info <<EOF
+    && cat > /etc/hand_isaac-image-info <<EOF
 ISAACSIM_BASE_IMAGE=${ISAACSIM_BASE_IMAGE}
 ISAACSIM_VERSION=${ISAACSIM_VERSION}
 ISAACLAB_GIT_URL=${ISAACLAB_GIT_URL}
@@ -125,25 +125,25 @@ EOF
 
 RUN chmod +x /usr/local/bin/isaacsimpy
 
-RUN cat > /etc/profile.d/isaac_ws.sh <<'EOF'
+RUN cat > /etc/profile.d/hand_isaac.sh <<'EOF'
 export ISAACSIM_PATH="${ISAACSIM_PATH:-/isaac-sim}"
 export ISAACSIM_PYTHON_EXE="${ISAACSIM_PYTHON_EXE:-/isaac-sim/python.sh}"
 export ISAACLAB_PYTHON_EXE="${ISAACLAB_PYTHON_EXE:-/usr/local/bin/isaaclabpy}"
 export ISAACLAB_SOURCE_PATHS="${ISAACLAB_SOURCE_PATHS:-/opt/IsaacLab/source/isaaclab:/opt/IsaacLab/source/isaaclab_tasks:/opt/IsaacLab/source/isaaclab_rl:/opt/IsaacLab/source/isaaclab_assets}"
-export ISAAC_WS_ROOT="${ISAAC_WS_ROOT:-/workspace/isaac_ws}"
+export ISAAC_WS_ROOT="${ISAAC_WS_ROOT:-/workspace/hand_isaac}"
 export PYTHONPATH="${ISAAC_WS_ROOT}/src:${ISAACLAB_SOURCE_PATHS}${PYTHONPATH:+:${PYTHONPATH}}"
 alias isaacpy='/usr/local/bin/isaaclabpy'
 alias python='/usr/local/bin/isaaclabpy'
 alias python3='/usr/local/bin/isaaclabpy'
 alias simpy='/usr/local/bin/isaacsimpy'
 alias islab='cd /opt/IsaacLab'
-alias iws='cd /workspace/isaac_ws'
+alias iws='cd /workspace/hand_isaac'
 EOF
 
-RUN printf '\nsource /etc/profile.d/isaac_ws.sh\n' >> /root/.bashrc
+RUN printf '\nsource /etc/profile.d/hand_isaac.sh\n' >> /root/.bashrc
 
-LABEL org.opencontainers.image.title="isaac-ws" \
-      org.opencontainers.image.description="Isaac Sim 5.1.0 + Isaac Lab source install workspace" \
+LABEL org.opencontainers.image.title="hand_isaac" \
+      org.opencontainers.image.description="Isaac Sim 5.1.0 and Isaac Lab 2.3.2 workspace" \
       org.opencontainers.image.source="https://github.com/wonsClawcode/isaac_ws"
 
 WORKDIR ${ISAAC_WS_ROOT}

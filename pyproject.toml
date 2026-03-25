@@ -3,9 +3,9 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "isaac-ws"
+name = "hand-isaac"
 version = "0.1.0"
-description = "Docker-based Isaac Sim 5.1.0 / Isaac Lab project scaffold"
+description = "Training workspace for Shadow Hand grasp experiments in Isaac Sim and Isaac Lab."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -20,6 +20,10 @@ dev = [
 ]
 
 [project.scripts]
+hand-isaac-launch = "isaac_ws.launch:main"
+hand-isaac-train = "isaac_ws.train:main"
+hand-isaac-eval = "isaac_ws.eval:main"
+hand-isaac-export = "isaac_ws.export:main"
 isaac-ws-launch = "isaac_ws.launch:main"
 isaac-ws-train = "isaac_ws.train:main"
 isaac-ws-eval = "isaac_ws.eval:main"

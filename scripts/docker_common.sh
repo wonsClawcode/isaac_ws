@@ -17,7 +17,7 @@ if [[ -f "${ROOT_DIR}/.env" ]]; then
   set +a
 fi
 
-DOCKER_ENV_FILE="$(resolve_repo_path "${DOCKER_ENV_FILE:-docker/env/company.env}")"
+DOCKER_ENV_FILE="$(resolve_repo_path "${DOCKER_ENV_FILE:-docker/env/hand_isaac.env}")"
 DOCKER_COMPOSE_FILE="$(resolve_repo_path "${DOCKER_COMPOSE_FILE:-docker/docker-compose.yml}")"
 ISAACLAB_SERVICE_NAME="${ISAACLAB_SERVICE_NAME:-isaac-lab}"
 HOST_UID="${HOST_UID:-$(id -u)}"

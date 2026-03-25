@@ -52,7 +52,7 @@ EXAMPLE_ALIAS="$(isaacsim_example_alias "${EXAMPLE_PATH}")"
 EXAMPLE_SUMMARY="$(isaacsim_example_summary "${EXAMPLE_PATH}")"
 
 echo "[INFO] Isaac Sim example (${MODE}): ${EXAMPLE_ALIAS} -> ${EXAMPLE_PATH}"
-echo "[INFO] Expected scene: ${EXAMPLE_SUMMARY}"
+echo "[INFO] Scene: ${EXAMPLE_SUMMARY}"
 
 case "${MODE}" in
   gui)

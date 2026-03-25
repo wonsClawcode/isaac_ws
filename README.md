@@ -1,157 +1,78 @@
-# isaac_ws
+# hand_isaac
 
-Isaac Sim + Isaac Lab 기반 로봇 강화학습 프로젝트의 초기 골격이다. 현재 기본 목표는 `Shadow Hand only` 조합으로 손바닥이 하늘을 향한 상태에서 구형 물체를 grasp하는 policy를 학습하는 것이다. `Franka + Shadow Hand` 합본 시나리오는 후속 확장 경로로 유지한다. 기본 실행 경로는 `Docker + Isaac Sim 5.1.0 + Isaac Lab 2.3.2`이며, 실제 학습과 검증은 사내 Linux RTX 머신에서 수행하는 흐름을 전제로 설계했다.
+Isaac Sim 5.1.0과 Isaac Lab 2.3.2를 기준으로 `Shadow Hand`가 구를 집는 정책을 학습하는 저장소다. 실행 환경은 Docker를 기본으로 두고, 학습 코드는 `isaac_ws` 모듈 아래에 유지한다.
 
-현재 기준 런타임 환경 마일스톤은 `Isaac Sim 5.1.0 + Isaac Lab 2.3.2 + persistent dev container workflow`로 고정한다. 이후 변경의 중심은 Docker 환경 구축이 아니라 task, reward, curriculum, training quality 쪽이다.
+## 구성
 
-## 목표
-
-- 실험 구성을 `task`, `env`, `robot`, `obs`, `action`, `reward`, `algo`, `experiment` 단위로 분리
-- Docker 이미지로 Isaac Sim 5.1.0과 Isaac Lab 스택을 고정
-- 실험 로그, 체크포인트, 캐시, 배포 자산을 코드와 분리
-- 추후 ROS 2 기반 실기 배포 경로를 자연스럽게 확장
-
-## 현재 포함된 것
-
-- Isaac Sim 5.1.0 공식 컨테이너 기반 Dockerfile
-- Isaac Lab 2.3.2와 기본 `rsl_rl` 학습 경로
-- Git source install `IsaacLab v2.3.2` + 공식 `isaaclab.sh --install` 경로
-- 이미지 안에 `Isaac Sim version / Isaac Lab git ref / 실제 commit / rl_games 설치 여부`를 남기는 빌드 메타데이터
-- Hydra 설정 조합 뼈대
-- `Shadow Hand only` palm-up sphere grasp용 Isaac Lab Direct RL task
-- `Franka + Shadow Hand` 확장용 Isaac Lab Direct RL task skeleton
-- GUI 디버그용 X11 Docker 오버라이드와 대규모 학습용 runtime/env 프로파일
-- 학습/평가/내보내기용 Docker 래퍼 스크립트
-- 사내 GPU 머신 사전 점검 스크립트
-- sim-to-real 전개를 위한 문서 초안
-
-## 디렉터리 요약
-
-- `configs/`: 실험 조합을 위한 설정 그룹
-- `docker/`: 이미지 빌드, compose, 런타임 requirements
-- `src/isaac_ws/`: 엔트리포인트와 공통 유틸리티
-- `scripts/`: Docker 빌드, 셸 진입, 학습 실행 래퍼
-- `docs/`: 아키텍처, 요구사항, Docker setup, 배포 메모
-- `deploy/ros2/`: ROS 2 연동 확장 지점
-- `runs/`, `logs/`, `checkpoints/`: 실험 산출물
+- Isaac Sim 5.1.0 기반 Docker 이미지
+- Isaac Lab 2.3.2 source install
+- `Shadow Hand + sphere grasp` Direct RL task
+- Hydra 기반 실험 조합
+- 학습, 평가, export, smoke 실행 스크립트
 
 ## 빠른 시작
 
-1. 사내 Linux GPU 머신에서 [`docs/requirements.md`](/Users/wonnerky/workspace/isaac_ws/docs/requirements.md)와 [`docs/setup/docker_environment.md`](/Users/wonnerky/workspace/isaac_ws/docs/setup/docker_environment.md)를 따라 Docker, Docker Compose, NVIDIA Container Toolkit 상태를 준비한다.
-2. 필요하면 [`.env.example`](/Users/wonnerky/workspace/isaac_ws/.env.example)를 참고해 `.env`를 만든다.
-3. 호스트 GPU와 Docker 런타임 상태를 확인한다.
+1. 호스트 준비 상태를 확인한다.
 
 ```bash
 ./scripts/preflight_company.sh
 ```
 
-4. Isaac Sim 5.1.0 + Isaac Lab 이미지 레이어를 빌드한다.
+2. 이미지를 빌드하고 설치 상태를 확인한다.
 
 ```bash
 ./scripts/docker_build.sh
 ./scripts/verify_docker_stack.sh
 ```
 
-기본 빌드 로그는 BuildKit `auto` 모드라서 단계 중심 UI로 보인다. 각 step의 상세 로그를 전부 보고 싶으면 아래처럼 바꾼다.
-
-```bash
-BUILDKIT_PROGRESS=plain ./scripts/docker_build.sh
-```
-
-예시처럼 `docker compose build isaaclab` 흐름을 그대로 쓰고 싶으면 아래처럼 선택할 수 있다. 기본값은 과거 `compose build`가 일부 머신에서 buildx 생성 단계에 멈추던 문제를 피하려고 `direct`를 유지한다.
-
-```bash
-DOCKER_BUILD_METHOD=compose ./scripts/docker_build.sh
-```
-
-런타임 import 에러가 한 번이라도 났다면 기존 이미지 레이어를 재사용하지 말고 아래처럼 다시 빌드하는 편이 안전하다.
-
-```bash
-./scripts/docker_build.sh --no-cache
-./scripts/verify_docker_stack.sh
-```
-
-`verify_docker_stack.sh` 출력에는 이제 이미지에 박아둔 `image_isaaclab_git_ref`, `image_isaaclab_git_commit`, `image_install_rl_games` 같은 메타데이터도 함께 나온다. wheel 버전 숫자와 실제 source ref를 같이 확인하려고 넣은 값이다.
-
-Kit 런타임이 반복적으로 죽거나, 이전에 깨진 이미지/확장 캐시 영향이 의심되면 아래처럼 Docker named cache를 비우고 다시 확인한다.
-
-```bash
-./scripts/docker_clear_caches.sh
-./scripts/verify_docker_stack.sh
-VERIFY_SIM_APP_SMOKE=1 ./scripts/verify_docker_stack.sh
-```
-
-회사망에서 GitHub outbound가 막혀 있으면 `rl_games` 설치는 기본적으로 건너뛴다. 현재 기본 알고리즘은 `rsl_rl_ppo`라서 기본 학습 경로에는 영향이 없다. `rl_games`가 정말 필요할 때만 아래처럼 켠다.
-
-```bash
-INSTALL_RL_GAMES=1 ./scripts/docker_build.sh --no-cache
-```
-
-우리 코드가 아니라 upstream Isaac Lab 자체가 뜨는지 먼저 확인하고 싶으면 공식 example smoke를 실행한다.
+3. GUI가 필요하면 X11 접근을 준비한다.
 
 ```bash
 ./scripts/prepare_x11.sh
-./scripts/verify_isaaclab_official.sh gui
 ```
 
-5. 지속형 dev container를 기준으로 작업한다.
+4. 지속형 컨테이너를 올리고 들어간다.
 
 ```bash
 ./scripts/docker_up.sh
 ./scripts/docker_exec.sh
 ```
 
-GUI/X11이 필요한 지속형 컨테이너는 이렇게 띄운다.
+GUI 컨테이너는 아래처럼 올린다.
 
 ```bash
-./scripts/prepare_x11.sh
 ./scripts/docker_up.sh gui
 ./scripts/docker_exec.sh
 ```
 
-컨테이너를 내릴 때는:
+5. smoke 또는 학습을 실행한다.
 
 ```bash
+./scripts/run_task_smoke.sh
+./scripts/run_train.sh
+```
+
+## 자주 쓰는 명령
+
+컨테이너 관리:
+
+```bash
+./scripts/docker_up.sh
+./scripts/docker_up.sh gui
+./scripts/docker_exec.sh
 ./scripts/docker_down.sh
 ```
 
-컨테이너 안에서 `python`, `python3`, `isaacpy`는 모두 `/usr/local/bin/isaaclabpy`를 가리킨다. 이 래퍼는 `isaaclab.sh -p`를 사용해 Isaac Lab 실행 환경을 먼저 맞춘다. raw Isaac Sim Python이 필요하면 `simpy`를 사용한다.
-
-Isaac Lab 공식 tutorial example을 지속형 컨테이너 안에서 띄우려면:
+예제 실행:
 
 ```bash
-./scripts/docker_up.sh gui
+./scripts/list_examples.sh
 ./scripts/run_isaaclab_example.sh gui
 ./scripts/run_isaaclab_example.sh headless
-./scripts/list_examples.sh
+./scripts/run_isaacsim_example.sh gui
 ```
 
-기본 GUI example은 `scripts/tutorials/00_sim/spawn_prims.py`이고, 기본 headless example은 `scripts/tutorials/00_sim/create_empty.py`다. 다른 tutorial을 보고 싶으면 두 번째 인자로 스크립트 경로를 넘긴다. 컨테이너 안에 들어가서 같은 스크립트를 직접 실행해도 동작한다.
-
-```bash
-./scripts/run_isaaclab_example.sh gui scripts/tutorials/00_sim/spawn_prims.py
-./scripts/run_isaaclab_example.sh gui spawn_prims
-./scripts/run_isaaclab_example.sh headless empty
-```
-
-주의할 점은 persistent container를 쓰는 동안 GUI 창을 닫아도 컨테이너 자체는 계속 살아 있다는 것이다. 이건 정상이다. 반면 example 프로세스는 보통 종료돼야 하지만, upstream GUI example/Kit 조합에 따라 창 닫힘이 즉시 프로세스 종료로 이어지지 않을 수 있다. 이런 경우에는 `Ctrl-C`로 exec 세션을 끊거나, `run.max_steps`가 있는 smoke 경로를 쓰는 편이 더 예측 가능하다.
-
-Isaac Sim standalone example은 이렇게 실행한다.
-
-```bash
-./scripts/docker_up.sh gui
-./scripts/run_isaacsim_example.sh
-```
-
-기본 example은 `/isaac-sim/standalone_examples/api/isaacsim.simulation_app/hello_world.py`다.
-
-예제가 실제로 무엇을 띄우는지 헷갈리면 아래 명령으로 alias, 실제 경로, 기대 화면을 먼저 확인한다.
-
-```bash
-./scripts/list_examples.sh
-```
-
-우리 커스텀 Shadow Hand + sphere task를 빠르게 띄워서 env 생성과 reset/step만 확인하고 싶으면 smoke를 쓴다.
+커스텀 task 확인:
 
 ```bash
 ./scripts/run_task_smoke.sh
@@ -159,60 +80,34 @@ Isaac Sim standalone example은 이렇게 실행한다.
 ./scripts/run_task_smoke.sh runtime=headless run.max_steps=300
 ```
 
-기본 smoke는 `gui_debug + 49 env + sine action + 1500 step`이다. 즉 학습이 아니라, task가 실제로 떠서 여러 env가 생성되고 step loop가 도는지만 빠르게 확인하는 용도다.
-
-6. 실제 학습/평가/내보내기는 Docker 래퍼를 통해 실행한다. 분산 학습 runtime이면 내부에서 `torch.distributed.run`으로 재실행된다.
+학습, 평가, export:
 
 ```bash
 ./scripts/check_config.sh
-./scripts/check_config.sh task=grasp_sphere_shadow_hand_only env=shadow_hand_palm_up robot=shadow_hand
-./scripts/run_train.sh
 ./scripts/run_train.sh task=grasp_sphere_shadow_hand_only env=shadow_hand_palm_up robot=shadow_hand experiment=shadow_hand_grasp_bootstrap
-./scripts/run_eval.sh task=grasp_sphere_shadow_hand_only runtime=gui_debug checkpoint_path=/workspace/isaac_ws/checkpoints/rsl_rl/your_experiment/model.pt
-./scripts/run_export.sh task=grasp_sphere_shadow_hand_only checkpoint_path=/workspace/isaac_ws/checkpoints/rsl_rl/your_experiment/model.pt
+./scripts/run_eval.sh task=grasp_sphere_shadow_hand_only checkpoint_path=/workspace/hand_isaac/checkpoints/rsl_rl/your_experiment/model.pt
+./scripts/run_export.sh task=grasp_sphere_shadow_hand_only checkpoint_path=/workspace/hand_isaac/checkpoints/rsl_rl/your_experiment/model.pt
 ```
 
-`runtime=gui_debug`를 넘기면 `run_train.sh`, `run_eval.sh`, `run_export.sh`는 자동으로 GUI compose 오버라이드를 붙인다. 이 경우 먼저 `./scripts/prepare_x11.sh`를 실행해 두는 편이 안전하다.
-
-이 세 래퍼는 이제 host와 container 안에서 같은 이름으로 실행할 수 있다. host에서 실행하면 persistent container를 자동으로 올리거나 재사용하고, container 안에서는 Docker CLI 없이 바로 launcher를 호출한다.
-
-실제 운용에서는 GUI 디버그와 대규모 학습을 분리해서 쓰는 편이 낫다.
+학습 smoke:
 
 ```bash
-./scripts/check_config.sh task=grasp_sphere_shadow_hand_only env=shadow_hand_palm_up_debug runtime=gui_debug
-./scripts/check_config.sh task=grasp_sphere_shadow_hand_only env=shadow_hand_palm_up_scaleout runtime=distributed_4gpu
+./scripts/run_train.sh runtime=gui_debug env=shadow_hand_palm_up_debug env.num_envs=1 algo.max_iterations=1
 ```
 
-일부 머신에서는 `Isaac Lab AppLauncher + native headless kit`가 드라이버/Kit 조합 때문에 세그폴트 날 수 있다. 이런 경우에는 X11이 있는 머신에서 `runtime=x11_compat`를 사용해 GUI kit를 띄우되 UI를 숨긴 compatibility 경로로 먼저 학습 smoke를 확인하는 편이 안전하다.
+## 디렉터리
 
-```bash
-./scripts/prepare_x11.sh
-./scripts/run_train.sh runtime=x11_compat env=shadow_hand_palm_up_debug env.num_envs=1 algo.max_iterations=1
-```
+- `configs/`: task, env, reward, runtime, experiment 설정
+- `src/isaac_ws/`: 실행 엔트리포인트와 task 코드
+- `scripts/`: 빌드, 컨테이너, smoke, train/eval/export 래퍼
+- `docker/`: Dockerfile, compose, 환경 변수 파일
+- `docs/`: setup, requirements, architecture, deployment 문서
 
-## 현재 가정
+## 문서
 
-- 실제 실행 타깃은 Linux + NVIDIA RTX GPU 머신이다.
-- 이 노트북에서는 Isaac Sim GUI, 대규모 병렬 학습, 렌더링 성능 검증을 하지 않는다.
-- Isaac Sim 5.1.0과 Isaac Lab은 Docker 이미지 안에서 설치된다.
-- GUI 디버그는 커스텀 Docker Compose X11 오버라이드를 통해 수행한다.
-- 대규모 학습은 headless + scaleout env/runtime 조합을 기본값으로 삼는다.
-- 기본 컨테이너 유저는 root로 실행해 Isaac Sim 이미지 내부 권한 문제를 피한다.
-- Kit 실행은 `OMNI_KIT_ALLOW_ROOT=1`과 `--allow-root`로 허용한다.
-
-## 다음으로 채워야 할 것
-
-- `Shadow Hand only` palm-up 초기 pose와 sphere spawn center의 GUI 튜닝
-- 실제 fingertip contact sensor와 self-collision proxy 제거
-- `Franka + Shadow Hand` 조합용 단일 USD 또는 articulation assembly
-- Shadow Hand용 joint mapping, tendon/coupling, PD gain
-- ROS 2 브리지와 실기 안전 계층
-
-## 참고 문서
-
-- [`docs/architecture.md`](/Users/wonnerky/workspace/isaac_ws/docs/architecture.md)
-- [`docs/requirements.md`](/Users/wonnerky/workspace/isaac_ws/docs/requirements.md)
-- [`docs/deployment.md`](/Users/wonnerky/workspace/isaac_ws/docs/deployment.md)
-- [`docs/setup/docker_environment.md`](/Users/wonnerky/workspace/isaac_ws/docs/setup/docker_environment.md)
-- [`docs/tasks/franka_shadow_hand_grasp.md`](/Users/wonnerky/workspace/isaac_ws/docs/tasks/franka_shadow_hand_grasp.md)
-- [`docs/asset_assembly.md`](/Users/wonnerky/workspace/isaac_ws/docs/asset_assembly.md)
+- [docs/requirements.md](docs/requirements.md)
+- [docs/setup/docker_environment.md](docs/setup/docker_environment.md)
+- [docs/architecture.md](docs/architecture.md)
+- [docs/deployment.md](docs/deployment.md)
+- [docs/tasks/franka_shadow_hand_grasp.md](docs/tasks/franka_shadow_hand_grasp.md)
+- [docs/asset_assembly.md](docs/asset_assembly.md)

@@ -9,7 +9,7 @@ if [[ -f "${DOCKER_ENV_FILE}" ]]; then
   set +a
 fi
 
-DOCKER_IMAGE="${DOCKER_IMAGE:-isaac-ws:5.1.0-lab2.3.2}"
+DOCKER_IMAGE="${DOCKER_IMAGE:-hand_isaac:5.1.0-lab2.3.2}"
 ISAACSIM_BASE_IMAGE="${ISAACSIM_BASE_IMAGE:-nvcr.io/nvidia/isaac-sim}"
 ISAACSIM_VERSION="${ISAACSIM_VERSION:-5.1.0}"
 ISAACLAB_GIT_URL="${ISAACLAB_GIT_URL:-https://github.com/isaac-sim/IsaacLab.git}"

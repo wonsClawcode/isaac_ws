@@ -1,5 +1,5 @@
 name: dev
-description: Low-risk baseline for first integration on the company GPU machine.
+description: Baseline profile for first integration on a GPU host.
 seed: 42
 tags:
   - bootstrap
