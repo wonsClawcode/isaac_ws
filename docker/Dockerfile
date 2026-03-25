@@ -18,7 +18,8 @@ ENV LANG=C.UTF-8 \
     TZ=Etc/UTC \
     TERM=xterm \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    PIP_NO_CACHE_DIR=1 \
+    PIP_NO_CACHE_DIR=0 \
+    PIP_CACHE_DIR=/root/.cache/pip \
     PYTHONUNBUFFERED=1 \
     ISAACSIM_PATH=/isaac-sim \
     ISAACSIM_PYTHON_EXE=/isaac-sim/python.sh \
@@ -34,44 +35,55 @@ ENV LANG=C.UTF-8 \
 
 USER root
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    git \
-    ca-certificates \
-    curl \
-    git-lfs \
-    less \
-    mesa-utils \
-    rsync \
-    unzip \
-    vim \
-    libglib2.0-0 \
-    libgl1 \
-    libsm6 \
-    libxext6 \
-    libxrender1 \
-    && rm -rf /var/lib/apt/lists/*
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends \
+      build-essential \
+      git \
+      ca-certificates \
+      curl \
+      git-lfs \
+      less \
+      mesa-utils \
+      rsync \
+      unzip \
+      vim \
+      libglib2.0-0 \
+      libgl1 \
+      libsm6 \
+      libxext6 \
+      libxrender1
 
 RUN git lfs install --system \
     && mkdir -p "${ISAAC_WS_ROOT}" /workspace
 
 COPY docker/requirements.runtime.txt /tmp/requirements.runtime.txt
 
-RUN git clone --branch "${ISAACLAB_GIT_REF}" --depth 1 "${ISAACLAB_GIT_URL}" "${ISAACLAB_ROOT}" \
-    && ln -sfn "${ISAACSIM_PATH}" "${ISAACLAB_ROOT}/_isaac_sim" \
-    && cd "${ISAACLAB_ROOT}" \
-    && "${ISAACSIM_PYTHON_EXE}" -m pip install --no-build-isolation --no-use-pep517 "flatdict==4.0.1" \
-    && ./isaaclab.sh --install rsl_rl \
+RUN git clone --branch "${ISAACLAB_GIT_REF}" --depth 1 "${ISAACLAB_GIT_URL}" "${ISAACLAB_ROOT}"
+
+RUN ln -sfn "${ISAACSIM_PATH}" "${ISAACLAB_ROOT}/_isaac_sim"
+
+RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
+    "${ISAACSIM_PYTHON_EXE}" -m pip install --no-build-isolation --no-use-pep517 "flatdict==4.0.1"
+
+RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
+    cd "${ISAACLAB_ROOT}" \
+    && ./isaaclab.sh --install rsl_rl
+
+RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
+    cd "${ISAACLAB_ROOT}" \
     && if [ "${INSTALL_RL_GAMES}" = "1" ]; then \
          ./isaaclab.sh --install rl_games; \
        else \
          echo "Skipping optional rl_games install"; \
-       fi \
-    && if grep -Eq '^[[:space:]]*[^#[:space:]]' /tmp/requirements.runtime.txt; then \
-         "${ISAACSIM_PYTHON_EXE}" -m pip install -r /tmp/requirements.runtime.txt; \
-       else \
-         echo "Skipping additional runtime requirements"; \
        fi
+
+RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
+    if grep -Eq '^[[:space:]]*[^#[:space:]]' /tmp/requirements.runtime.txt; then \
+      "${ISAACSIM_PYTHON_EXE}" -m pip install -r /tmp/requirements.runtime.txt; \
+    else \
+      echo "Skipping additional runtime requirements"; \
+    fi
 
 RUN ISAACLAB_GIT_COMMIT="$(git -C "${ISAACLAB_ROOT}" rev-parse HEAD)" \
     && ISAACLAB_GIT_DESCRIBE="$(git -C "${ISAACLAB_ROOT}" describe --tags --always)" \
@@ -89,7 +101,8 @@ EOF
 WORKDIR ${ISAAC_WS_ROOT}
 COPY pyproject.toml README.md /tmp/project/
 COPY src /tmp/project/src
-RUN "${ISAACSIM_PYTHON_EXE}" -m pip install -e /tmp/project
+RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
+    "${ISAACSIM_PYTHON_EXE}" -m pip install -e /tmp/project
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
