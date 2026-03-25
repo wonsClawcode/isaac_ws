@@ -64,7 +64,7 @@ RUN git clone --branch "${ISAACLAB_GIT_REF}" --depth 1 "${ISAACLAB_GIT_URL}" "${
 RUN ln -sfn "${ISAACSIM_PATH}" "${ISAACLAB_ROOT}/_isaac_sim"
 
 RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
-    "${ISAACSIM_PYTHON_EXE}" -m pip install --no-build-isolation --no-use-pep517 "flatdict==4.0.1"
+    "${ISAACSIM_PYTHON_EXE}" -m pip install --no-build-isolation "flatdict==4.0.1"
 
 RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
     cd "${ISAACLAB_ROOT}" \
