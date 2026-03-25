@@ -23,6 +23,7 @@ ENV LANG=C.UTF-8 \
     ISAACSIM_PATH=/isaac-sim \
     ISAACSIM_PYTHON_EXE=/isaac-sim/python.sh \
     ISAACLAB_PYTHON_EXE=/usr/local/bin/isaaclabpy \
+    ISAACLAB_SOURCE_PATHS=/opt/IsaacLab/source/isaaclab:/opt/IsaacLab/source/isaaclab_tasks:/opt/IsaacLab/source/isaaclab_rl:/opt/IsaacLab/source/isaaclab_assets \
     ISAAC_WS_ROOT=/workspace/isaac_ws \
     ISAACLAB_ROOT=/opt/IsaacLab \
     ACCEPT_EULA=Y \
@@ -97,6 +98,8 @@ RUN cat > /usr/local/bin/isaaclabpy <<'EOF'
 #!/bin/bash
 set -euo pipefail
 cd "${ISAACLAB_ROOT:-/opt/IsaacLab}"
+export ISAACLAB_SOURCE_PATHS="${ISAACLAB_SOURCE_PATHS:-/opt/IsaacLab/source/isaaclab:/opt/IsaacLab/source/isaaclab_tasks:/opt/IsaacLab/source/isaaclab_rl:/opt/IsaacLab/source/isaaclab_assets}"
+export PYTHONPATH="${ISAACLAB_SOURCE_PATHS}${PYTHONPATH:+:${PYTHONPATH}}"
 exec ./isaaclab.sh -p "$@"
 EOF
 
@@ -113,8 +116,9 @@ RUN cat > /etc/profile.d/isaac_ws.sh <<'EOF'
 export ISAACSIM_PATH="${ISAACSIM_PATH:-/isaac-sim}"
 export ISAACSIM_PYTHON_EXE="${ISAACSIM_PYTHON_EXE:-/isaac-sim/python.sh}"
 export ISAACLAB_PYTHON_EXE="${ISAACLAB_PYTHON_EXE:-/usr/local/bin/isaaclabpy}"
+export ISAACLAB_SOURCE_PATHS="${ISAACLAB_SOURCE_PATHS:-/opt/IsaacLab/source/isaaclab:/opt/IsaacLab/source/isaaclab_tasks:/opt/IsaacLab/source/isaaclab_rl:/opt/IsaacLab/source/isaaclab_assets}"
 export ISAAC_WS_ROOT="${ISAAC_WS_ROOT:-/workspace/isaac_ws}"
-export PYTHONPATH="${ISAAC_WS_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH="${ISAAC_WS_ROOT}/src:${ISAACLAB_SOURCE_PATHS}${PYTHONPATH:+:${PYTHONPATH}}"
 alias isaacpy='/usr/local/bin/isaaclabpy'
 alias python='/usr/local/bin/isaaclabpy'
 alias python3='/usr/local/bin/isaaclabpy'

@@ -65,8 +65,13 @@ if isaacsim_version == "not-installed":
         isaacsim_version = version_file.read_text(encoding="utf-8").strip()
 
 print(f"isaacsim={isaacsim_version}")
+isaaclab_dist = dist_location("isaaclab")
+if isaaclab_dist == "not-installed":
+    source_roots = [part for part in os.getenv("ISAACLAB_SOURCE_PATHS", "").split(":") if part]
+    if source_roots:
+        isaaclab_dist = source_roots[0]
 print(f"isaaclab={version_or_fallback('isaaclab', 'source-managed')}")
-print(f"isaaclab_dist={dist_location('isaaclab')}")
+print(f"isaaclab_dist={isaaclab_dist}")
 print(f"isaaclab_tasks_version={version_or_fallback('isaaclab_tasks')}")
 print(f"isaaclab_tasks_dist={dist_location('isaaclab_tasks')}")
 print(f"isaaclab_rl_version={version_or_fallback('isaaclab_rl')}")

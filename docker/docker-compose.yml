@@ -34,6 +34,7 @@ services:
       ISAACSIM_PATH: /isaac-sim
       ISAACSIM_PYTHON_EXE: /isaac-sim/python.sh
       ISAACLAB_PYTHON_EXE: /usr/local/bin/isaaclabpy
+      ISAACLAB_SOURCE_PATHS: /opt/IsaacLab/source/isaaclab:/opt/IsaacLab/source/isaaclab_tasks:/opt/IsaacLab/source/isaaclab_rl:/opt/IsaacLab/source/isaaclab_assets
       NVIDIA_DRIVER_CAPABILITIES: ${NVIDIA_DRIVER_CAPABILITIES:-all}
       NVIDIA_VISIBLE_DEVICES: ${NVIDIA_VISIBLE_DEVICES:-all}
       ISAAC_WS_OUTPUT_ROOT: ${ISAAC_WS_OUTPUT_ROOT:-/workspace/isaac_ws/runs}
