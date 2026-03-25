@@ -22,6 +22,7 @@ class ShadowHandSphereGraspPPORunnerCfg(RslRlOnPolicyRunnerCfg):
     save_interval = 100
     experiment_name = "shadow_hand_sphere_grasp"
     clip_actions = 1.0
+    obs_groups = {"policy": ["policy"], "critic": ["policy"]}
     policy = RslRlPpoActorCriticCfg(
         init_noise_std=1.0,
         actor_obs_normalization=True,

@@ -21,7 +21,7 @@ class FrankaShadowHandGraspPPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24
     max_iterations = 1500
     empirical_normalization = False
-    obs_groups = {"actor": ["policy"], "critic": ["policy"]}
+    obs_groups = {"policy": ["policy"], "critic": ["policy"]}
     save_interval = 100
     experiment_name = "franka_shadow_hand_grasp"
     clip_actions = 1.0
