@@ -7,11 +7,16 @@
 - `docker/`
 - `scripts/preflight_company.sh`
 - `scripts/docker_build.sh`
+- `scripts/docker_up.sh`
+- `scripts/docker_exec.sh`
+- `scripts/docker_down.sh`
 - `scripts/docker_shell.sh`
 - `scripts/docker_shell_gui.sh`
+- `scripts/run_isaaclab_example.sh`
+- `scripts/run_isaacsim_example.sh`
 - `docker/env/*.env`
 
-이 층은 어떤 머신에서 어떻게 같은 실행 환경을 확보할지를 담당한다. 현재는 `Isaac Sim 5.1.0 공식 컨테이너 + Isaac Lab git source install`을 기반으로 이미지를 빌드한다. 저사양 로컬에서는 정의만 유지하고, 실제 GPU 실행은 사내 Linux 머신에서 수행한다. GUI는 `docker-compose.gui.yml` 오버라이드로 분리해 headless 학습 경로와 충돌하지 않게 한다.
+이 층은 어떤 머신에서 어떻게 같은 실행 환경을 확보할지를 담당한다. 현재는 `Isaac Sim 5.1.0 공식 컨테이너 + Isaac Lab git source install`을 기반으로 이미지를 빌드한다. 저사양 로컬에서는 정의만 유지하고, 실제 GPU 실행은 사내 Linux 머신에서 수행한다. GUI는 `docker-compose.gui.yml` 오버라이드로 분리해 headless 학습 경로와 충돌하지 않게 한다. 기본 compose service는 idle command로 유지되어 `docker_up.sh`로 지속형 dev container를 올리고 `docker_exec.sh`로 재진입할 수 있다.
 
 ## 2. 실험 정의 층
 

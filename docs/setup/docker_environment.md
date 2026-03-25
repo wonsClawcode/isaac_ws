@@ -81,6 +81,27 @@ Kit 런타임 충돌이 반복되면 먼저 [`/Users/wonnerky/workspace/isaac_ws
 ./scripts/docker_shell.sh
 ```
 
+지속형 dev container를 사용하려면:
+
+```bash
+./scripts/docker_up.sh
+./scripts/docker_exec.sh
+```
+
+GUI/X11이 필요한 지속형 컨테이너는:
+
+```bash
+./scripts/prepare_x11.sh
+./scripts/docker_up.sh gui
+./scripts/docker_exec.sh
+```
+
+정리할 때는:
+
+```bash
+./scripts/docker_down.sh
+```
+
 컨테이너 안에서 기본 Python 실행 경로는 `/usr/local/bin/isaaclabpy`다. 이 래퍼는 `IsaacLab/isaaclab.sh -p`를 통해 Isaac Sim Python과 Isaac Lab 환경 설정을 함께 적용한다. interactive shell에서는 `python`, `python3`, `isaacpy` alias가 모두 이 경로를 가리킨다. raw Isaac Sim Python이 필요하면 `simpy` alias를 사용한다.
 
 ## Isaac Sim 실행
@@ -99,6 +120,21 @@ Isaac Lab 공식 문서 기준으로 기본 제공 Isaac Lab 컨테이너는 hea
 ./scripts/prepare_x11.sh
 ./scripts/docker_shell_gui.sh
 ./scripts/run_isaacsim_gui.sh
+```
+
+Isaac Lab 공식 tutorial smoke는 지속형 컨테이너 기준으로 이렇게 띄운다.
+
+```bash
+./scripts/docker_up.sh gui
+./scripts/run_isaaclab_example.sh gui
+./scripts/run_isaaclab_example.sh headless
+```
+
+Isaac Sim standalone example은 이렇게 띄운다.
+
+```bash
+./scripts/docker_up.sh gui
+./scripts/run_isaacsim_example.sh
 ```
 
 필수 조건:

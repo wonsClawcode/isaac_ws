@@ -52,7 +52,10 @@ services:
       - isaac-carb-logs:/isaac-sim/kit/logs/Kit/Isaac-Sim
       - isaac-data:/root/.local/share/ov/data
       - isaac-docs:/root/Documents
-    command: ${CONTAINER_COMMAND:-bash}
+    command:
+      - bash
+      - -lc
+      - trap : TERM INT; sleep infinity & wait
 
 volumes:
   isaac-kit-cache:

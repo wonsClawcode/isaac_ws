@@ -19,12 +19,13 @@ fi
 
 DOCKER_ENV_FILE="$(resolve_repo_path "${DOCKER_ENV_FILE:-docker/env/company.env}")"
 DOCKER_COMPOSE_FILE="$(resolve_repo_path "${DOCKER_COMPOSE_FILE:-docker/docker-compose.yml}")"
+ISAACLAB_SERVICE_NAME="${ISAACLAB_SERVICE_NAME:-isaac-lab}"
 HOST_UID="${HOST_UID:-$(id -u)}"
 HOST_GID="${HOST_GID:-$(id -g)}"
 XAUTHORITY_PATH="${XAUTHORITY_PATH:-${XAUTHORITY:-${HOME}/.Xauthority}}"
 X11_SOCKET_DIR="${X11_SOCKET_DIR:-/tmp/.X11-unix}"
 
-export HOST_UID HOST_GID XAUTHORITY_PATH X11_SOCKET_DIR
+export HOST_UID HOST_GID XAUTHORITY_PATH X11_SOCKET_DIR ISAACLAB_SERVICE_NAME
 
 docker_compose() {
   local compose_files=("-f" "${DOCKER_COMPOSE_FILE}")
@@ -36,6 +37,28 @@ docker_compose() {
     --env-file "${DOCKER_ENV_FILE}" \
     "${compose_files[@]}" \
     "$@"
+}
+
+compose_service_container_id() {
+  docker_compose ps -q "${ISAACLAB_SERVICE_NAME}" 2>/dev/null || true
+}
+
+compose_service_running() {
+  local container_id
+  container_id="$(compose_service_container_id)"
+  [[ -n "${container_id}" ]] && [[ "$(docker inspect -f '{{.State.Running}}' "${container_id}" 2>/dev/null || true)" == "true" ]]
+}
+
+ensure_compose_service_running() {
+  if ! compose_service_running; then
+    echo "Persistent container '${ISAACLAB_SERVICE_NAME}' is not running. Start it with ./scripts/docker_up.sh or ./scripts/docker_up.sh gui." >&2
+    exit 1
+  fi
+}
+
+docker_exec_service() {
+  ensure_compose_service_running
+  docker_compose exec "${ISAACLAB_SERVICE_NAME}" "$@"
 }
 
 requires_gui_runtime() {
