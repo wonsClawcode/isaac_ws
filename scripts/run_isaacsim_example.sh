@@ -15,12 +15,22 @@ fi
 
 case "${MODE}" in
   gui)
-    start_compose_service gui
-    docker_exec_service bash -lc 'cd /isaac-sim && example_path="$1"; shift; /isaac-sim/python.sh "$example_path" "$@"' bash "${EXAMPLE_PATH}" "$@"
+    if running_inside_container; then
+      cd /isaac-sim
+      /isaac-sim/python.sh "${EXAMPLE_PATH}" "$@"
+    else
+      start_compose_service gui
+      docker_exec_service bash -lc 'cd /isaac-sim && example_path="$1"; shift; /isaac-sim/python.sh "$example_path" "$@"' bash "${EXAMPLE_PATH}" "$@"
+    fi
     ;;
   headless)
-    start_compose_service headless
-    docker_exec_service bash -lc 'cd /isaac-sim && example_path="$1"; shift; /isaac-sim/python.sh "$example_path" "$@"' bash "${EXAMPLE_PATH}" "$@"
+    if running_inside_container; then
+      cd /isaac-sim
+      /isaac-sim/python.sh "${EXAMPLE_PATH}" "$@"
+    else
+      start_compose_service headless
+      docker_exec_service bash -lc 'cd /isaac-sim && example_path="$1"; shift; /isaac-sim/python.sh "$example_path" "$@"' bash "${EXAMPLE_PATH}" "$@"
+    fi
     ;;
   *)
     echo "Usage: ./scripts/run_isaacsim_example.sh [gui|headless] [example_path] [extra args...]" >&2

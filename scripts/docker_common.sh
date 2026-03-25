@@ -39,6 +39,10 @@ docker_compose() {
     "$@"
 }
 
+running_inside_container() {
+  [[ -f "/.dockerenv" ]] || [[ -f "/run/.containerenv" ]]
+}
+
 compose_service_container_id() {
   docker_compose ps -q "${ISAACLAB_SERVICE_NAME}" 2>/dev/null || true
 }

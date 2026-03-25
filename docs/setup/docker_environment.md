@@ -130,6 +130,8 @@ Isaac Lab 공식 tutorial smoke는 지속형 컨테이너 기준으로 이렇게
 ./scripts/run_isaaclab_example.sh headless
 ```
 
+기본 GUI example은 `spawn_prims.py`, 기본 headless example은 `create_empty.py`다. 컨테이너 안에 진입한 뒤 같은 스크립트를 직접 실행해도 된다.
+
 Isaac Sim standalone example은 이렇게 띄운다.
 
 ```bash
