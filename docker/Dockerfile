@@ -60,7 +60,7 @@ COPY docker/requirements.runtime.txt /tmp/requirements.runtime.txt
 RUN git clone --branch "${ISAACLAB_GIT_REF}" --depth 1 "${ISAACLAB_GIT_URL}" "${ISAACLAB_ROOT}" \
     && ln -sfn "${ISAACSIM_PATH}" "${ISAACLAB_ROOT}/_isaac_sim" \
     && cd "${ISAACLAB_ROOT}" \
-    && ./isaaclab.sh --install none \
+    && "${ISAACSIM_PYTHON_EXE}" -m pip install --no-build-isolation --no-use-pep517 "flatdict==4.0.1" \
     && ./isaaclab.sh --install rsl_rl \
     && if [ "${INSTALL_RL_GAMES}" = "1" ]; then \
          ./isaaclab.sh --install rl_games; \

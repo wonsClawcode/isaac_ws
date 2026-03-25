@@ -1,5 +1,5 @@
 --extra-index-url https://pypi.nvidia.com
 # Additional runtime dependencies layered on top of the Isaac Lab source install.
-# Isaac Lab v2.3.2 source install should already pull this through setup.py,
-# but the container runtime has shown it missing during extension startup.
-flatdict==4.0.1
+# Keep this file for extra workspace-specific runtime packages.
+# flatdict is installed explicitly in the Dockerfile using legacy build mode
+# because flatdict 4.0.1 breaks under isolated PEP 517 builds in this stack.
