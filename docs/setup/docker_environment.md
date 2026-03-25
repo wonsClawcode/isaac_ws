@@ -77,18 +77,12 @@ Kit 런타임 충돌이 반복되면 먼저 [`/Users/wonnerky/workspace/isaac_ws
 
 ## 컨테이너 진입
 
-```bash
-./scripts/docker_shell.sh
-```
-
 지속형 dev container를 사용하려면:
 
 ```bash
 ./scripts/docker_up.sh
 ./scripts/docker_exec.sh
 ```
-
-기본 권장 흐름은 이 persistent container 경로다. `docker_shell.sh`, `docker_shell_gui.sh`는 일회성 셸이 필요할 때만 쓰는 편이 낫다.
 
 GUI/X11이 필요한 지속형 컨테이너는:
 
@@ -106,23 +100,9 @@ GUI/X11이 필요한 지속형 컨테이너는:
 
 컨테이너 안에서 기본 Python 실행 경로는 `/usr/local/bin/isaaclabpy`다. 이 래퍼는 `IsaacLab/isaaclab.sh -p`를 통해 Isaac Sim Python과 Isaac Lab 환경 설정을 함께 적용한다. interactive shell에서는 `python`, `python3`, `isaacpy` alias가 모두 이 경로를 가리킨다. raw Isaac Sim Python이 필요하면 `simpy` alias를 사용한다.
 
-## Isaac Sim 실행
-
-```bash
-./scripts/run_isaacsim.sh
-```
-
-최초 실행 시 Omniverse 확장 캐시를 내려받는 데 시간이 오래 걸릴 수 있다.
-
 ## GUI 디버그
 
 Isaac Lab 공식 문서 기준으로 기본 제공 Isaac Lab 컨테이너는 headless 전용이다. 이 저장소는 GUI가 필요한 경우를 위해 Isaac Sim 5.1.0 베이스 이미지 위에 커스텀 Docker 이미지를 만들고, 별도 Compose 오버라이드로 X11을 연결한다.
-
-```bash
-./scripts/prepare_x11.sh
-./scripts/docker_shell_gui.sh
-./scripts/run_isaacsim_gui.sh
-```
 
 Isaac Lab 공식 tutorial smoke는 지속형 컨테이너 기준으로 이렇게 띄운다.
 

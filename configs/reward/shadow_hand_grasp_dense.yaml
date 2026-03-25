@@ -3,6 +3,7 @@ terms:
   palm_to_object_distance: 2.0
   fingertip_contact: 0.75
   fingertip_caging: 1.5
+  finger_curl: 1.25
   object_lift: 2.5
   stable_hold: 8.0
   palm_up_alignment: 0.0

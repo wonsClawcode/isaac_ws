@@ -14,6 +14,43 @@ from isaaclab.utils.math import sample_uniform
 from .env_cfg import ShadowHandSphereGraspEnvCfg
 
 
+def _quat_mul(lhs: torch.Tensor, rhs: torch.Tensor) -> torch.Tensor:
+    lw, lx, ly, lz = lhs.unbind(dim=-1)
+    rw, rx, ry, rz = rhs.unbind(dim=-1)
+    return torch.stack(
+        (
+            lw * rw - lx * rx - ly * ry - lz * rz,
+            lw * rx + lx * rw + ly * rz - lz * ry,
+            lw * ry - lx * rz + ly * rw + lz * rx,
+            lw * rz + lx * ry - ly * rx + lz * rw,
+        ),
+        dim=-1,
+    )
+
+
+def _quat_from_euler_xyz(roll: torch.Tensor, pitch: torch.Tensor, yaw: torch.Tensor) -> torch.Tensor:
+    half_roll = roll * 0.5
+    half_pitch = pitch * 0.5
+    half_yaw = yaw * 0.5
+
+    cr = torch.cos(half_roll)
+    sr = torch.sin(half_roll)
+    cp = torch.cos(half_pitch)
+    sp = torch.sin(half_pitch)
+    cy = torch.cos(half_yaw)
+    sy = torch.sin(half_yaw)
+
+    return torch.stack(
+        (
+            cr * cp * cy + sr * sp * sy,
+            sr * cp * cy - cr * sp * sy,
+            cr * sp * cy + sr * cp * sy,
+            cr * cp * sy - sr * sp * cy,
+        ),
+        dim=-1,
+    )
+
+
 class ShadowHandSphereGraspEnv(DirectRLEnv):
     cfg: ShadowHandSphereGraspEnvCfg
 
@@ -23,12 +60,18 @@ class ShadowHandSphereGraspEnv(DirectRLEnv):
         self.joint_position_targets = None
         self.hold_steps = None
         self.actuated_joint_indices = None
+        self.curl_joint_indices = None
         self.fingertip_body_indices = None
         self._success_hold_steps = max(1, int(round(cfg.success_hold_duration_s / (cfg.sim.dt * cfg.decimation))))
         super().__init__(cfg, render_mode, **kwargs)
 
         self.actuated_joint_indices = torch.tensor(
             [self.robot.joint_names.index(name) for name in self.cfg.actuated_joint_names],
+            device=self.device,
+            dtype=torch.long,
+        )
+        self.curl_joint_indices = torch.tensor(
+            [self.robot.joint_names.index(name) for name in self.cfg.curl_joint_names],
             device=self.device,
             dtype=torch.long,
         )
@@ -119,17 +162,20 @@ class ShadowHandSphereGraspEnv(DirectRLEnv):
         contact_flags, contact_force_proxy = self._compute_contact_proxy(object_pos)
         contact_count = torch.sum(contact_flags, dim=-1)
         caging_score = torch.mean(contact_force_proxy, dim=-1)
+        finger_curl = self._compute_finger_curl()
 
         stable_hold = grasp_distance <= self.cfg.max_grasp_center_distance_m
         stable_hold = stable_hold & (object_height >= self.cfg.min_success_lift_height_m)
         stable_hold = stable_hold & (object_speed <= self.cfg.max_success_object_speed_mps)
         stable_hold = stable_hold & (contact_count >= self.cfg.min_success_contact_sites)
+        stable_hold = stable_hold & (finger_curl >= self.cfg.min_success_finger_curl)
         self.hold_steps = torch.where(stable_hold, self.hold_steps + 1, torch.zeros_like(self.hold_steps))
 
         reward = torch.zeros(self.num_envs, device=self.device)
         reward += self.cfg.reward_palm_to_object * torch.exp(-10.0 * grasp_distance)
         reward += self.cfg.reward_fingertip_contact * contact_count.float()
         reward += self.cfg.reward_fingertip_caging * caging_score
+        reward += self.cfg.reward_finger_curl * finger_curl * torch.exp(-8.0 * grasp_distance)
         reward += self.cfg.reward_object_lift * object_height
         reward += self.cfg.reward_stable_hold * (self.hold_steps >= self._success_hold_steps).float()
 
@@ -174,7 +220,7 @@ class ShadowHandSphereGraspEnv(DirectRLEnv):
         robot_root_state = self.robot.data.default_root_state[env_ids].clone()
         robot_root_state[:, :3] = torch.tensor(self.cfg.hand_root_position, device=self.device).repeat(len(env_ids), 1)
         robot_root_state[:, :3] += self.scene.env_origins[env_ids]
-        robot_root_state[:, 3:7] = torch.tensor(self.cfg.hand_root_rotation, device=self.device).repeat(len(env_ids), 1)
+        robot_root_state[:, 3:7] = self._sample_root_quaternions(len(env_ids))
         robot_root_state[:, 7:] = 0.0
         self.robot.write_root_pose_to_sim(robot_root_state[:, :7], env_ids)
         self.robot.write_root_velocity_to_sim(robot_root_state[:, 7:], env_ids)
@@ -201,6 +247,29 @@ class ShadowHandSphereGraspEnv(DirectRLEnv):
         contact_force_proxy = torch.clamp(self.cfg.contact_proxy_radius_m - fingertip_distance, min=0.0)
         contact_force_proxy = contact_force_proxy / self.cfg.contact_proxy_radius_m
         return contact_flags, contact_force_proxy
+
+    def _compute_finger_curl(self) -> torch.Tensor:
+        joint_pos = self.robot.data.joint_pos[:, self.curl_joint_indices]
+        joint_limits = self.robot.data.soft_joint_pos_limits[:, self.curl_joint_indices]
+        lower_limits = joint_limits[:, :, 0]
+        upper_limits = joint_limits[:, :, 1]
+        normalized = (joint_pos - lower_limits) / torch.clamp(upper_limits - lower_limits, min=1.0e-6)
+        normalized = torch.clamp(normalized, 0.0, 1.0)
+        return torch.mean(normalized, dim=-1)
+
+    def _sample_root_quaternions(self, count: int) -> torch.Tensor:
+        base_quat = torch.tensor(self.cfg.hand_root_rotation, device=self.device).repeat(count, 1)
+        jitter_deg = self.cfg.hand_root_rotation_jitter_deg
+        if not any(abs(float(component)) > 0.0 for component in jitter_deg):
+            return base_quat
+
+        deg_to_rad = torch.pi / 180.0
+        roll = sample_uniform(-float(jitter_deg[0]), float(jitter_deg[0]), (count,), self.device) * deg_to_rad
+        pitch = sample_uniform(-float(jitter_deg[1]), float(jitter_deg[1]), (count,), self.device) * deg_to_rad
+        yaw = sample_uniform(-float(jitter_deg[2]), float(jitter_deg[2]), (count,), self.device) * deg_to_rad
+        jitter_quat = _quat_from_euler_xyz(roll, pitch, yaw)
+        root_quat = _quat_mul(base_quat, jitter_quat)
+        return root_quat / torch.linalg.norm(root_quat, dim=-1, keepdim=True).clamp_min(1.0e-6)
 
     def _sample_object_spawn_positions(self, count: int) -> torch.Tensor:
         center = torch.tensor(self.cfg.object_spawn_center, device=self.device).repeat(count, 1)

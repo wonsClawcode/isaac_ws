@@ -2,6 +2,8 @@
 
 Isaac Sim + Isaac Lab 기반 로봇 강화학습 프로젝트의 초기 골격이다. 현재 기본 목표는 `Shadow Hand only` 조합으로 손바닥이 하늘을 향한 상태에서 구형 물체를 grasp하는 policy를 학습하는 것이다. `Franka + Shadow Hand` 합본 시나리오는 후속 확장 경로로 유지한다. 기본 실행 경로는 `Docker + Isaac Sim 5.1.0 + Isaac Lab 2.3.2`이며, 실제 학습과 검증은 사내 Linux RTX 머신에서 수행하는 흐름을 전제로 설계했다.
 
+현재 기준 런타임 환경 마일스톤은 `Isaac Sim 5.1.0 + Isaac Lab 2.3.2 + persistent dev container workflow`로 고정한다. 이후 변경의 중심은 Docker 환경 구축이 아니라 task, reward, curriculum, training quality 쪽이다.
+
 ## 목표
 
 - 실험 구성을 `task`, `env`, `robot`, `obs`, `action`, `reward`, `algo`, `experiment` 단위로 분리
@@ -92,21 +94,12 @@ INSTALL_RL_GAMES=1 ./scripts/docker_build.sh --no-cache
 ./scripts/verify_isaaclab_official.sh gui
 ```
 
-5. 필요하면 컨테이너 셸에 들어가거나 Isaac Sim을 직접 띄운다.
-
-```bash
-./scripts/docker_shell.sh
-./scripts/run_isaacsim.sh
-```
-
-지속형 dev container가 필요하면 아래 순서로 띄우고 붙는다.
+5. 지속형 dev container를 기준으로 작업한다.
 
 ```bash
 ./scripts/docker_up.sh
 ./scripts/docker_exec.sh
 ```
-
-지금 기준 기본 권장 흐름은 이 persistent container 경로다. `docker_shell.sh`, `docker_shell_gui.sh`는 일회성 셸이 필요할 때만 쓰는 편이 낫다.
 
 GUI/X11이 필요한 지속형 컨테이너는 이렇게 띄운다.
 
@@ -123,14 +116,6 @@ GUI/X11이 필요한 지속형 컨테이너는 이렇게 띄운다.
 ```
 
 컨테이너 안에서 `python`, `python3`, `isaacpy`는 모두 `/usr/local/bin/isaaclabpy`를 가리킨다. 이 래퍼는 `isaaclab.sh -p`를 사용해 Isaac Lab 실행 환경을 먼저 맞춘다. raw Isaac Sim Python이 필요하면 `simpy`를 사용한다.
-
-GUI 디버그가 필요하면 X11 접근을 열고 GUI 전용 래퍼를 사용한다.
-
-```bash
-./scripts/prepare_x11.sh
-./scripts/docker_shell_gui.sh
-./scripts/run_isaacsim_gui.sh
-```
 
 Isaac Lab 공식 tutorial example을 지속형 컨테이너 안에서 띄우려면:
 

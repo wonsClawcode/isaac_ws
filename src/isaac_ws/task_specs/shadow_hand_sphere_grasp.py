@@ -16,6 +16,7 @@ class SuccessCriteria:
 class RobotSpec:
     hand_dof: int
     actuated_joint_names: tuple[str, ...]
+    curl_joint_names: tuple[str, ...]
     fingertip_frames: tuple[str, ...]
 
 
@@ -52,6 +53,24 @@ SHADOW_HAND_SPHERE_GRASP_SPEC = TaskSpec(
             "robot0_LFJ2",
             "robot0_LFJ1",
             "robot0_THJ4",
+            "robot0_THJ3",
+            "robot0_THJ2",
+            "robot0_THJ1",
+            "robot0_THJ0",
+        ),
+        curl_joint_names=(
+            "robot0_FFJ3",
+            "robot0_FFJ2",
+            "robot0_FFJ1",
+            "robot0_MFJ3",
+            "robot0_MFJ2",
+            "robot0_MFJ1",
+            "robot0_RFJ3",
+            "robot0_RFJ2",
+            "robot0_RFJ1",
+            "robot0_LFJ3",
+            "robot0_LFJ2",
+            "robot0_LFJ1",
             "robot0_THJ3",
             "robot0_THJ2",
             "robot0_THJ1",

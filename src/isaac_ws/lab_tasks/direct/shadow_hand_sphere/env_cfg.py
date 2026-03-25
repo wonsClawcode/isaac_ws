@@ -68,6 +68,7 @@ class ShadowHandSphereGraspEnvCfg(DirectRLEnvCfg):
     )
 
     actuated_joint_names = list(SHADOW_HAND_SPHERE_GRASP_SPEC.robot.actuated_joint_names)
+    curl_joint_names = list(SHADOW_HAND_SPHERE_GRASP_SPEC.robot.curl_joint_names)
     fingertip_body_names = list(SHADOW_HAND_SPHERE_GRASP_SPEC.robot.fingertip_frames)
 
     hand_action_scale = 0.18
@@ -75,6 +76,7 @@ class ShadowHandSphereGraspEnvCfg(DirectRLEnvCfg):
 
     hand_root_position = (0.0, 0.0, 0.82)
     hand_root_rotation = (0.7071, -0.7071, 0.0, 0.0)
+    hand_root_rotation_jitter_deg = (5.0, 5.0, 15.0)
     grasp_center_position = (0.0, 0.0, 0.94)
     object_spawn_center = (0.0, 0.0, 0.96)
     object_spawn_jitter = (0.015, 0.015, 0.01)
@@ -86,6 +88,7 @@ class ShadowHandSphereGraspEnvCfg(DirectRLEnvCfg):
     reward_palm_to_object = 2.0
     reward_fingertip_contact = 0.75
     reward_fingertip_caging = 1.5
+    reward_finger_curl = 1.25
     reward_object_lift = 2.5
     reward_stable_hold = 8.0
     reward_palm_up_alignment = 0.0
@@ -98,4 +101,5 @@ class ShadowHandSphereGraspEnvCfg(DirectRLEnvCfg):
     min_success_lift_height_m = SHADOW_HAND_SPHERE_GRASP_SPEC.success.min_height_above_grasp_center_m
     max_success_object_speed_mps = SHADOW_HAND_SPHERE_GRASP_SPEC.success.max_object_speed_mps
     min_success_contact_sites = SHADOW_HAND_SPHERE_GRASP_SPEC.success.min_contact_sites
+    min_success_finger_curl = 0.55
     success_hold_duration_s = SHADOW_HAND_SPHERE_GRASP_SPEC.success.hold_duration_s

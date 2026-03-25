@@ -164,6 +164,8 @@ def apply_env_overrides(cfg: DictConfig, env_cfg: Any, app_launcher: Any) -> Any
         env_cfg.hand_root_position = tuple(float(value) for value in cfg.env.workspace.hand_root_position_m)
     if hasattr(env_cfg, "hand_root_rotation") and "hand_root_rotation_wxyz" in cfg.env.workspace:
         env_cfg.hand_root_rotation = tuple(float(value) for value in cfg.env.workspace.hand_root_rotation_wxyz)
+    if hasattr(env_cfg, "hand_root_rotation_jitter_deg") and "hand_root_rotation_jitter_deg" in cfg.task.reset:
+        env_cfg.hand_root_rotation_jitter_deg = tuple(float(value) for value in cfg.task.reset.hand_root_rotation_jitter_deg)
     if hasattr(env_cfg, "grasp_center_position") and "grasp_center_position_m" in cfg.env.workspace:
         env_cfg.grasp_center_position = tuple(float(value) for value in cfg.env.workspace.grasp_center_position_m)
     if hasattr(env_cfg, "object_spawn_center") and "sphere_spawn_center_m" in cfg.env.workspace:
@@ -185,6 +187,8 @@ def apply_env_overrides(cfg: DictConfig, env_cfg: Any, app_launcher: Any) -> Any
         env_cfg.max_success_object_speed_mps = float(cfg.task.success.max_object_speed_mps)
     if hasattr(env_cfg, "min_success_contact_sites"):
         env_cfg.min_success_contact_sites = int(cfg.task.success.min_contact_sites)
+    if hasattr(env_cfg, "min_success_finger_curl") and "min_finger_curl" in cfg.task.success:
+        env_cfg.min_success_finger_curl = float(cfg.task.success.min_finger_curl)
     if hasattr(env_cfg, "success_hold_duration_s"):
         env_cfg.success_hold_duration_s = float(cfg.task.success.hold_duration_s)
     if hasattr(env_cfg, "success_palm_up_cosine"):
@@ -196,6 +200,8 @@ def apply_env_overrides(cfg: DictConfig, env_cfg: Any, app_launcher: Any) -> Any
         env_cfg.reward_fingertip_contact = float(cfg.reward.terms.fingertip_contact)
     if hasattr(env_cfg, "reward_fingertip_caging"):
         env_cfg.reward_fingertip_caging = float(cfg.reward.terms.fingertip_caging)
+    if hasattr(env_cfg, "reward_finger_curl") and "finger_curl" in cfg.reward.terms:
+        env_cfg.reward_finger_curl = float(cfg.reward.terms.finger_curl)
     if hasattr(env_cfg, "reward_object_lift"):
         env_cfg.reward_object_lift = float(cfg.reward.terms.object_lift)
     if hasattr(env_cfg, "reward_stable_hold"):
@@ -210,6 +216,10 @@ def apply_env_overrides(cfg: DictConfig, env_cfg: Any, app_launcher: Any) -> Any
         env_cfg.penalty_object_drop = float(cfg.reward.penalties.object_drop)
     if hasattr(env_cfg, "penalty_self_collision"):
         env_cfg.penalty_self_collision = float(cfg.reward.penalties.self_collision)
+    if hasattr(env_cfg, "hand_joint_reset_noise") and "hand_joint_noise_rad" in cfg.task.reset:
+        env_cfg.hand_joint_reset_noise = float(cfg.task.reset.hand_joint_noise_rad)
+    if hasattr(env_cfg, "arm_joint_reset_noise") and "arm_joint_noise_rad" in cfg.task.reset:
+        env_cfg.arm_joint_reset_noise = float(cfg.task.reset.arm_joint_noise_rad)
 
     return env_cfg
 
