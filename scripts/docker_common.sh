@@ -55,15 +55,14 @@ compose_service_running() {
 
 start_compose_service() {
   local mode="${1:-headless}"
-  if compose_service_running; then
-    return 0
-  fi
 
   case "${mode}" in
     gui)
       enable_gui_runtime
       ;;
     headless)
+      unset DOCKER_COMPOSE_EXTRA_FILE
+      export HEADLESS=1
       ;;
     *)
       echo "Unsupported compose service mode: ${mode}" >&2
@@ -90,7 +89,7 @@ requires_gui_runtime() {
   local arg
   for arg in "$@"; do
     case "${arg}" in
-      runtime=gui_debug|runtime=x11_compat|runtime.headless=false|runtime.ui_mode=x11)
+      runtime=gui|runtime=gui_*|runtime=gui-*|runtime=x11_compat|runtime=x11_*|runtime=x11-*|runtime.headless=false|headless=false|app.headless=false|runtime.ui_mode=x11|ui_mode=x11)
         return 0
         ;;
     esac
