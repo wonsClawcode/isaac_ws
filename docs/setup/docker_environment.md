@@ -142,11 +142,23 @@ Isaac Sim standalone example은 이렇게 띄운다.
 ./scripts/run_isaacsim_example.sh
 ```
 
+persistent container를 쓰는 동안 GUI 창을 닫아도 컨테이너 자체는 계속 살아 있는 것이 정상이다. 다만 example 프로세스는 보통 같이 끝나야 하는데, upstream GUI example/Kit 조합에서는 창 닫힘이 즉시 프로세스 종료로 연결되지 않을 수 있다. 그런 경우에는 `Ctrl-C`로 exec 세션을 끊거나, `run.max_steps`가 있는 smoke 경로를 쓰는 편이 더 안정적이다.
+
 무슨 example이 있는지, 실제 경로가 어디인지, 실행 후 무엇이 보여야 정상인지 먼저 보고 싶으면 아래 명령을 쓴다.
 
 ```bash
 ./scripts/list_examples.sh
 ```
+
+우리 커스텀 task 자체를 빠르게 확인하려면 smoke를 쓴다.
+
+```bash
+./scripts/run_task_smoke.sh
+./scripts/run_task_smoke.sh env.num_envs=49
+./scripts/run_task_smoke.sh runtime=headless run.max_steps=300
+```
+
+기본 smoke는 `gui_debug + 49 env + sine action + 1500 step` 조합이다. 학습이 아니라 env 생성, reset, step, 렌더링 경로가 연결되는지 빠르게 보는 용도다.
 
 필수 조건:
 

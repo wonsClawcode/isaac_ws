@@ -63,7 +63,7 @@ case "${MODE}" in
       ./isaaclab.sh -p "${SCRIPT_PATH}" "$@"
     else
       start_compose_service gui
-      docker_exec_service bash -lc 'cd /opt/IsaacLab && script_path="$1"; shift; ./isaaclab.sh -p "$script_path" "$@"' bash "${SCRIPT_PATH}" "$@"
+      docker_exec_service bash -lc 'cd /opt/IsaacLab && script_path="$1"; shift; exec ./isaaclab.sh -p "$script_path" "$@"' bash "${SCRIPT_PATH}" "$@"
     fi
     ;;
   headless)
@@ -72,7 +72,7 @@ case "${MODE}" in
       ./isaaclab.sh -p "${SCRIPT_PATH}" --headless "$@"
     else
       start_compose_service headless
-      docker_exec_service bash -lc 'cd /opt/IsaacLab && script_path="$1"; shift; ./isaaclab.sh -p "$script_path" --headless "$@"' bash "${SCRIPT_PATH}" "$@"
+      docker_exec_service bash -lc 'cd /opt/IsaacLab && script_path="$1"; shift; exec ./isaaclab.sh -p "$script_path" --headless "$@"' bash "${SCRIPT_PATH}" "$@"
     fi
     ;;
   *)

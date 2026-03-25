@@ -11,8 +11,13 @@ from hydra import compose, initialize_config_dir
 
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG_DIR = ROOT / "configs"
-ACTOR_TO_CONFIG = {"train": "train", "eval": "eval", "export": "export"}
-ACTOR_TO_MODULE = {"train": "isaac_ws.train", "eval": "isaac_ws.eval", "export": "isaac_ws.export"}
+ACTOR_TO_CONFIG = {"train": "train", "eval": "eval", "export": "export", "smoke": "smoke"}
+ACTOR_TO_MODULE = {
+    "train": "isaac_ws.train",
+    "eval": "isaac_ws.eval",
+    "export": "isaac_ws.export",
+    "smoke": "isaac_ws.smoke",
+}
 
 
 def parse_args() -> argparse.Namespace:

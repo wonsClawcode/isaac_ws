@@ -50,7 +50,7 @@ def build_inside_container_command(cfg: DictConfig) -> list[str]:
 def build_execution_plan(cfg: DictConfig) -> dict[str, Any]:
     overrides = build_override_summary(cfg)
     actor = str(cfg.run.actor)
-    script_name = f"run_{actor}.sh"
+    script_name = "run_task_smoke.sh" if actor == "smoke" else f"run_{actor}.sh"
     experiment_id = build_experiment_id(cfg)
     config_fingerprint = build_config_fingerprint(cfg)
 
