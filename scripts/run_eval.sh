@@ -8,12 +8,13 @@ usage() {
 Usage: ./scripts/run_eval.sh [hydra overrides...]
 
 Examples
-  ./scripts/run_eval.sh task=grasp_sphere_shadow_hand_only checkpoint_path=/workspace/hand_isaac/checkpoints/rsl_rl/your_experiment/model.pt
-  ./scripts/run_eval.sh runtime=gui_debug task=grasp_sphere_shadow_hand_only checkpoint_path=/workspace/hand_isaac/checkpoints/rsl_rl/your_experiment/model.pt
+  ./scripts/run_eval.sh task=grasp_sphere_shadow_hand_only run.checkpoint_path=/workspace/hand_isaac/checkpoints/rsl_rl/your_experiment/model.pt
+  ./scripts/run_eval.sh runtime=gui_debug task=grasp_sphere_shadow_hand_only run.checkpoint_path=/workspace/hand_isaac/checkpoints/rsl_rl/your_experiment/model.pt
 
 Notes
   - host에서 실행하면 persistent container를 자동으로 올리거나 재사용한다.
   - container 안에서 실행하면 Docker CLI 없이 바로 launcher를 호출한다.
+  - 이전 방식인 checkpoint_path=... 도 자동으로 run.checkpoint_path=... 로 변환한다.
 EOF
 }
 

@@ -85,8 +85,8 @@ GUI 컨테이너는 아래처럼 올린다.
 ```bash
 ./scripts/check_config.sh
 ./scripts/run_train.sh task=grasp_sphere_shadow_hand_only env=shadow_hand_palm_up robot=shadow_hand experiment=shadow_hand_grasp_bootstrap
-./scripts/run_eval.sh task=grasp_sphere_shadow_hand_only checkpoint_path=/workspace/hand_isaac/checkpoints/rsl_rl/your_experiment/model.pt
-./scripts/run_export.sh task=grasp_sphere_shadow_hand_only checkpoint_path=/workspace/hand_isaac/checkpoints/rsl_rl/your_experiment/model.pt
+./scripts/run_eval.sh task=grasp_sphere_shadow_hand_only run.checkpoint_path=/workspace/hand_isaac/checkpoints/rsl_rl/your_experiment/model.pt
+./scripts/run_export.sh task=grasp_sphere_shadow_hand_only run.checkpoint_path=/workspace/hand_isaac/checkpoints/rsl_rl/your_experiment/model.pt
 ```
 
 학습 smoke:

@@ -18,6 +18,12 @@ ACTOR_TO_MODULE = {
     "export": "isaac_ws.export",
     "smoke": "isaac_ws.smoke",
 }
+LEGACY_RUN_OVERRIDE_KEYS = {
+    "train": {"checkpoint_path", "record_video", "video_length", "video_interval", "max_steps", "real_time"},
+    "eval": {"checkpoint_path", "record_video", "video_length", "video_interval", "max_steps", "real_time"},
+    "export": {"checkpoint_path", "export_dir"},
+    "smoke": {"max_steps", "real_time"},
+}
 
 
 def parse_args() -> argparse.Namespace:
@@ -32,9 +38,37 @@ def compose_cfg(config_name: str, overrides: list[str]):
         return compose(config_name=config_name, overrides=overrides)
 
 
+def normalize_overrides(actor: str, overrides: list[str]) -> list[str]:
+    normalized: list[str] = []
+    remapped: list[str] = []
+    run_keys = LEGACY_RUN_OVERRIDE_KEYS.get(actor, set())
+
+    for override in overrides:
+        if "=" not in override:
+            normalized.append(override)
+            continue
+
+        key, value = override.split("=", 1)
+        if key.startswith("run.") or "." in key or key.startswith("+"):
+            normalized.append(override)
+            continue
+
+        if key in run_keys:
+            normalized_key = f"run.{key}"
+            normalized.append(f"{normalized_key}={value}")
+            remapped.append(f"{key} -> {normalized_key}")
+        else:
+            normalized.append(override)
+
+    if remapped:
+        print(f"[INFO] Remapped legacy overrides for {actor}: {', '.join(remapped)}")
+    return normalized
+
+
 def main() -> None:
     args = parse_args()
-    cfg = compose_cfg(ACTOR_TO_CONFIG[args.actor], list(args.overrides))
+    overrides = normalize_overrides(args.actor, list(args.overrides))
+    cfg = compose_cfg(ACTOR_TO_CONFIG[args.actor], overrides)
 
     env = os.environ.copy()
     env.setdefault("ISAAC_WS_RUN_TIMESTAMP", datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
@@ -58,11 +92,11 @@ def main() -> None:
                 f"--nproc_per_node={int(cfg.runtime.num_gpus)}",
                 "-m",
                 module_name,
-                *args.overrides,
+                *overrides,
             ]
         )
     else:
-        cmd = [sys.executable, "-m", module_name, *args.overrides]
+        cmd = [sys.executable, "-m", module_name, *overrides]
 
     os.execvpe(cmd[0], cmd, env)
 
