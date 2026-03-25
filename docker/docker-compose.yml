@@ -1,0 +1,69 @@
+services:
+  isaac-lab:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        ISAACSIM_BASE_IMAGE: ${ISAACSIM_BASE_IMAGE:-nvcr.io/nvidia/isaac-sim}
+        ISAACSIM_VERSION: ${ISAACSIM_VERSION:-5.1.0}
+        ISAACLAB_GIT_URL: ${ISAACLAB_GIT_URL:-https://github.com/isaac-sim/IsaacLab.git}
+        ISAACLAB_GIT_REF: ${ISAACLAB_GIT_REF:-v2.3.2}
+        INSTALL_RL_GAMES: ${INSTALL_RL_GAMES:-0}
+    image: ${DOCKER_IMAGE:-hand_isaac:5.1.0-lab2.3.2}
+    container_name: ${CONTAINER_NAME:-hand_isaac}
+    gpus: all
+    ipc: host
+    network_mode: host
+    stdin_open: true
+    tty: true
+    shm_size: ${SHM_SIZE:-16gb}
+    ulimits:
+      memlock: -1
+      stack: 67108864
+    working_dir: /workspace/hand_isaac
+    environment:
+      ACCEPT_EULA: ${ACCEPT_EULA:-Y}
+      PRIVACY_CONSENT: ${PRIVACY_CONSENT:-Y}
+      OMNI_KIT_ACCEPT_EULA: ${OMNI_KIT_ACCEPT_EULA:-YES}
+      OMNI_KIT_ALLOW_ROOT: ${OMNI_KIT_ALLOW_ROOT:-1}
+      HEADLESS: ${HEADLESS:-1}
+      DISPLAY: ${DISPLAY:-}
+      ISAAC_WS_GUI: ${ISAAC_WS_GUI:-0}
+      QT_X11_NO_MITSHM: ${QT_X11_NO_MITSHM:-1}
+      TERM: ${TERM:-xterm}
+      ISAACSIM_PATH: /isaac-sim
+      ISAACSIM_PYTHON_EXE: /isaac-sim/python.sh
+      ISAACLAB_PYTHON_EXE: /usr/local/bin/isaaclabpy
+      ISAACLAB_SOURCE_PATHS: /opt/IsaacLab/source/isaaclab:/opt/IsaacLab/source/isaaclab_tasks:/opt/IsaacLab/source/isaaclab_rl:/opt/IsaacLab/source/isaaclab_assets
+      NVIDIA_DRIVER_CAPABILITIES: ${NVIDIA_DRIVER_CAPABILITIES:-all}
+      NVIDIA_VISIBLE_DEVICES: ${NVIDIA_VISIBLE_DEVICES:-all}
+      ISAAC_WS_OUTPUT_ROOT: ${ISAAC_WS_OUTPUT_ROOT:-/workspace/hand_isaac/runs}
+      ISAAC_WS_LOG_ROOT: ${ISAAC_WS_LOG_ROOT:-/workspace/hand_isaac/logs}
+      ISAAC_WS_CHECKPOINT_ROOT: ${ISAAC_WS_CHECKPOINT_ROOT:-/workspace/hand_isaac/checkpoints}
+      WANDB_MODE: ${WANDB_MODE:-offline}
+    volumes:
+      - .:/workspace/hand_isaac
+      - isaac-kit-cache:/isaac-sim/kit/cache
+      - isaac-ov-cache:/root/.cache/ov
+      - isaac-pip-cache:/root/.cache/pip
+      - isaac-gl-cache:/root/.cache/nvidia/GLCache
+      - isaac-compute-cache:/root/.nv/ComputeCache
+      - isaac-logs:/root/.nvidia-omniverse/logs
+      - isaac-carb-logs:/isaac-sim/kit/logs/Kit/Isaac-Sim
+      - isaac-data:/root/.local/share/ov/data
+      - isaac-docs:/root/Documents
+    command:
+      - "bash"
+      - "-lc"
+      - "trap 'exit 0' TERM INT; while sleep infinity; do :; done"
+
+volumes:
+  isaac-kit-cache:
+  isaac-pip-cache:
+  isaac-ov-cache:
+  isaac-gl-cache:
+  isaac-compute-cache:
+  isaac-logs:
+  isaac-carb-logs:
+  isaac-data:
+  isaac-docs:

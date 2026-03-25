@@ -1,0 +1,15 @@
+name: grasp_curriculum
+description: Multi-stage curriculum from fixed palm-up resets to randomized object properties.
+seed: 42
+tags:
+  - franka-shadow
+  - grasp
+  - curriculum
+checkpoint_interval: 100
+video_interval: 200
+stages:
+  - fixed_pose
+  - sphere_jitter
+  - joint_noise
+  - friction_mass_randomization
+  - vision_enable

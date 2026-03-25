@@ -1,0 +1,11 @@
+name: shadow_hand_grasp_bootstrap
+description: Bootstrap experiment for Shadow Hand only palm-up sphere grasp.
+seed: 42
+tags:
+  - shadow-hand
+  - grasp
+  - sphere
+checkpoint_interval: 100
+video_interval: 250
+curriculum_stage: fixed_hand_pose
+max_epochs_without_progress: 50

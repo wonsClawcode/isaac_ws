@@ -1,0 +1,42 @@
+params:
+  seed: 42
+  algo:
+    name: a2c_continuous
+  model:
+    name: continuous_a2c_logstd
+  network:
+    name: actor_critic
+    separate: false
+    mlp:
+      units: [512, 256, 128]
+      activation: elu
+      d2rl: false
+      initializer:
+        name: default
+      regularizer:
+        name: none
+  config:
+    name: franka_shadow_hand_grasp
+    env_name: rlgpu
+    device: cuda:0
+    multi_gpu: false
+    max_epochs: 1500
+    num_actors: 128
+    horizon_length: 24
+    minibatch_size: 3072
+    mini_epochs: 5
+    gamma: 0.99
+    tau: 0.95
+    learning_rate: 0.0003
+    lr_schedule: adaptive
+    kl_threshold: 0.01
+    clip_value: true
+    e_clip: 0.2
+    entropy_coef: 0.01
+    critic_coef: 1.0
+    grad_norm: 1.0
+    truncate_grads: true
+    normalize_input: true
+    normalize_value: true
+    clip_actions: 1.0
+    bounds_loss_coef: 0.0001

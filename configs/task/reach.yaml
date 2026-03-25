@@ -1,0 +1,16 @@
+name: reach
+isaaclab_task_id: Isaac-Reach-Franka-v0
+description: End-effector reaches a target pose on a tabletop scene.
+episode_length_s: 8.0
+control_decimation: 2
+compatibility:
+  robots:
+    - franka_fr3
+  envs:
+    - tabletop
+  observations:
+    - proprio
+  actions:
+    - joint_position
+  rewards:
+    - reach_dense

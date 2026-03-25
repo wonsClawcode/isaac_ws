@@ -1,0 +1,17 @@
+name: shadow_hand_grasp_dense
+terms:
+  palm_to_object_distance: 2.0
+  fingertip_contact: 0.75
+  fingertip_caging: 1.5
+  finger_curl: 1.25
+  object_lift: 2.5
+  stable_hold: 8.0
+  palm_up_alignment: 0.0
+penalties:
+  action_rate: 0.0005
+  joint_velocity: 0.0002
+  object_drop: 8.0
+  self_collision: 0.0
+schedules:
+  enable_lift_reward_after_steps: 10000
+  enable_hold_reward_after_steps: 20000

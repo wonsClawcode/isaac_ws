@@ -1,0 +1,10 @@
+defaults:
+  - train
+  - _self_
+
+run:
+  mode: execute
+  actor: export
+  python_entrypoint: isaac_ws.export
+  checkpoint_path: ""
+  export_dir: ${hydra:runtime.output_dir}/exported

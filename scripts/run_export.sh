@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/docker_common.sh"
+
+usage() {
+  cat <<'EOF'
+Usage: ./scripts/run_export.sh [hydra overrides...]
+
+Examples
+  ./scripts/run_export.sh task=grasp_sphere_shadow_hand_only run.checkpoint_path=/workspace/hand_isaac/checkpoints/rsl_rl/your_experiment/model.pt
+
+Notes
+  - host에서 실행하면 persistent container를 자동으로 올리거나 재사용한다.
+  - container 안에서 실행하면 Docker CLI 없이 바로 launcher를 호출한다.
+  - 이전 방식인 checkpoint_path=... 도 자동으로 run.checkpoint_path=... 로 변환한다.
+EOF
+}
+
+if [[ "${1:-}" == "help" || "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+  usage
+  exit 0
+fi
+
+if running_inside_container; then
+  /usr/local/bin/isaaclabpy -m isaac_ws.launch export "$@"
+else
+  if requires_gui_runtime "$@"; then
+    start_compose_service gui
+  else
+    start_compose_service headless
+  fi
+  docker_exec_service /usr/local/bin/isaaclabpy -m isaac_ws.launch export "$@"
+fi

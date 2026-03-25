@@ -1,0 +1,14 @@
+name: shadow_hand_grasp_proprio
+modalities:
+  - shadow_hand_joint_positions
+  - shadow_hand_joint_velocities
+  - object_pose_relative_to_grasp_center
+  - object_linear_velocity
+  - object_angular_velocity
+  - fingertip_contact_flags
+  - fingertip_contact_proximity
+  - object_height_above_grasp_center
+history_length: 1
+normalize: true
+privileged_for_training_only:
+  - object_pose_in_world

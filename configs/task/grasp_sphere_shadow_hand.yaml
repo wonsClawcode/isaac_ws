@@ -1,0 +1,42 @@
+name: grasp_sphere_shadow_hand
+isaaclab_task_id: Isaac-Grasp-Sphere-Franka-Shadow-Direct-v0
+implementation_required: true
+implementation:
+  module: isaac_ws.lab_tasks.direct.franka_shadow_hand
+  entry_point: isaac_ws.lab_tasks.direct.franka_shadow_hand.env:FrankaShadowHandGraspEnv
+  env_cfg_entry_point: isaac_ws.lab_tasks.direct.franka_shadow_hand.env_cfg:FrankaShadowHandGraspEnvCfg
+  rl_games_cfg_entry_point: isaac_ws.lab_tasks.direct.franka_shadow_hand.agents:rl_games_ppo_cfg.yaml
+  rsl_rl_cfg_entry_point: isaac_ws.lab_tasks.direct.franka_shadow_hand.agents.rsl_rl_ppo_cfg:FrankaShadowHandGraspPPORunnerCfg
+description: Palm-up grasp task where a Franka-mounted Shadow Hand encloses and lifts a sphere.
+workflow: direct
+episode_length_s: 10.0
+control_decimation: 2
+object:
+  shape: sphere
+  radius_m: 0.035
+  mass_kg: 0.12
+  spawn_frame: palm
+  spawn_offset_m: [0.0, 0.0, 0.055]
+success:
+  min_lift_height_m: 0.04
+  hold_duration_s: 0.75
+  max_object_speed_mps: 0.12
+  min_contact_sites: 3
+  require_palm_up_cosine: 0.9
+reset:
+  palm_up_orientation_quat_wxyz: [0.7071, 0.0, 0.7071, 0.0]
+  arm_joint_noise_rad: 0.02
+  hand_joint_noise_rad: 0.05
+compatibility:
+  robots:
+    - franka_shadow_hand
+  envs:
+    - palm_up_workspace
+    - palm_up_workspace_debug
+    - palm_up_workspace_scaleout
+  observations:
+    - grasp_proprio_contact
+  actions:
+    - franka_shadow_hand_delta_pos
+  rewards:
+    - grasp_sphere_dense

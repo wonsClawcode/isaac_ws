@@ -1,0 +1,14 @@
+name: distributed_2gpu
+headless: true
+device: cuda:0
+enable_cameras: false
+livestream: false
+num_threads: 16
+distributed: true
+num_gpus: 2
+nnodes: 1
+node_rank: 0
+master_addr: 127.0.0.1
+master_port: 29500
+ui_mode: none
+kit_args: --/rtx/verifyDriverVersion/enabled=false --/renderer/multiGpu/enabled=false --/renderer/multiGpu/autoEnable=false

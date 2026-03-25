@@ -1,0 +1,18 @@
+name: shadow_hand_palm_up
+scene_type: shadow_hand_only_grasp
+num_envs: 256
+env_spacing: 1.25
+enable_cameras: false
+terrain: plane
+workspace:
+  hand_root_position_m: [0.0, 0.0, 0.82]
+  hand_root_rotation_wxyz: [0.7071, -0.7071, 0.0, 0.0]
+  grasp_center_position_m: [0.0, 0.3, 0.94]
+  sphere_spawn_center_m: [0.0, 0.3, 0.96]
+  sphere_spawn_jitter_m: [0.015, 0.015, 0.01]
+physics:
+  timestep_s: 0.008333
+  substeps: 2
+  enable_self_collision: true
+  solver_position_iterations: 16
+  solver_velocity_iterations: 4

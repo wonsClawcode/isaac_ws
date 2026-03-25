@@ -1,0 +1,8 @@
+name: franka_fr3
+asset_usd: assets/robots/franka_fr3/franka_fr3.usd
+control_frequency_hz: 60
+end_effector_frame: panda_hand
+ros2:
+  namespace: /franka
+  joint_state_topic: /franka/joint_states
+  command_topic: /franka/joint_commands

@@ -1,0 +1,26 @@
+name: shadow_hand
+asset_usd: ""
+source_asset: isaaclab_assets.shadow_hand
+mount:
+  required: false
+  strategy: built_in_shadow_hand_asset
+arm:
+  dof: 0
+  control_frequency_hz: 60
+  end_effector_frame: ""
+hand:
+  dof: 20
+  fingertip_frames:
+    - robot0_ffdistal
+    - robot0_mfdistal
+    - robot0_rfdistal
+    - robot0_lfdistal
+    - robot0_thdistal
+  coupled_tendons_present: true
+dynamics:
+  retune_pd_gains: false
+  reestimate_inertia: false
+ros2:
+  namespace: /shadow_hand
+  joint_state_topic: /shadow_hand/joint_states
+  command_topic: /shadow_hand/joint_commands

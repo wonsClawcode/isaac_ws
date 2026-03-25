@@ -1,0 +1,13 @@
+name: franka_shadow_hand_delta_pos
+space: normalized_delta_joint_position
+arm:
+  dof: 7
+  scale: 0.08
+  clip: 1.0
+  freeze_base_arm_by_default: true
+hand:
+  dof: 24
+  scale: 0.2
+  clip: 1.0
+curriculum:
+  unfreeze_arm_after_stage: sphere_jitter

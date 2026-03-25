@@ -1,0 +1,38 @@
+defaults:
+  - task: grasp_sphere_shadow_hand_only
+  - env: shadow_hand_palm_up
+  - robot: shadow_hand
+  - obs: shadow_hand_grasp_proprio
+  - action: shadow_hand_delta_pos
+  - reward: shadow_hand_grasp_dense
+  - algo: rsl_rl_ppo
+  - experiment: shadow_hand_grasp_bootstrap
+  - runtime: headless
+  - deploy: ros2_shadow_grasp
+  - _self_
+
+project:
+  name: hand_isaac
+  stage: shadow_hand_sphere_grasp
+
+run:
+  mode: execute
+  actor: train
+  python_entrypoint: isaac_ws.train
+  container_python: /usr/local/bin/isaaclabpy
+  output_root: ${oc.env:ISAAC_WS_OUTPUT_ROOT,${hydra:runtime.cwd}/runs}
+  log_root: ${oc.env:ISAAC_WS_LOG_ROOT,${hydra:runtime.cwd}/logs}
+  checkpoint_root: ${oc.env:ISAAC_WS_CHECKPOINT_ROOT,${hydra:runtime.cwd}/checkpoints}
+  checkpoint_path: ""
+  record_video: false
+  video_length: 200
+  video_interval: ${experiment.video_interval}
+  max_steps: 0
+  real_time: false
+  export_dir: ${hydra:runtime.output_dir}/exported
+
+hydra:
+  job:
+    chdir: false
+  run:
+    dir: ${run.output_root}/${now:%Y-%m-%d}/${task.name}__${env.name}__${robot.name}__${obs.name}__${action.name}__${reward.name}__${algo.name}__${experiment.name}__${runtime.name}__${deploy.name}__s${experiment.seed}/${now:%H-%M-%S}

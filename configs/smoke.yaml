@@ -1,0 +1,22 @@
+defaults:
+  - train
+  - override env: shadow_hand_palm_up_debug
+  - override runtime: gui_debug
+  - _self_
+
+run:
+  mode: execute
+  actor: smoke
+  python_entrypoint: isaac_ws.smoke
+  max_steps: 1500
+  real_time: true
+
+env:
+  num_envs: 49
+  env_spacing: 1.75
+  enable_cameras: true
+
+smoke:
+  action_mode: sine
+  action_amplitude: 0.35
+  print_every: 120

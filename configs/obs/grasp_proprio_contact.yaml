@@ -1,0 +1,18 @@
+name: grasp_proprio_contact
+modalities:
+  - franka_joint_positions
+  - franka_joint_velocities
+  - shadow_joint_positions
+  - shadow_joint_velocities
+  - palm_pose
+  - object_pose_in_palm_frame
+  - object_linear_velocity
+  - object_angular_velocity
+  - fingertip_contact_flags
+  - fingertip_contact_forces
+  - palm_up_alignment
+history_length: 1
+normalize: true
+privileged_for_training_only:
+  - object_pose_in_world
+  - object_material_properties
