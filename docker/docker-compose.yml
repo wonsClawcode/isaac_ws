@@ -53,9 +53,9 @@ services:
       - isaac-data:/root/.local/share/ov/data
       - isaac-docs:/root/Documents
     command:
-      - bash
-      - -lc
-      - trap : TERM INT; sleep infinity & wait
+      - "bash"
+      - "-lc"
+      - "trap 'exit 0' TERM INT; while sleep infinity; do :; done"
 
 volumes:
   isaac-kit-cache:

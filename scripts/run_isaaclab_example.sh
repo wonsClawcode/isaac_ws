@@ -13,13 +13,13 @@ if [[ "$#" -ge 1 ]]; then
   shift
 fi
 
-ensure_compose_service_running
-
 case "${MODE}" in
   gui)
+    start_compose_service gui
     docker_exec_service bash -lc 'cd /opt/IsaacLab && script_path="$1"; shift; ./isaaclab.sh -p "$script_path" "$@"' bash "${SCRIPT_PATH}" "$@"
     ;;
   headless)
+    start_compose_service headless
     docker_exec_service bash -lc 'cd /opt/IsaacLab && script_path="$1"; shift; ./isaaclab.sh -p "$script_path" --headless "$@"' bash "${SCRIPT_PATH}" "$@"
     ;;
   *)

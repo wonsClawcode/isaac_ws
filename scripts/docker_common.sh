@@ -49,6 +49,27 @@ compose_service_running() {
   [[ -n "${container_id}" ]] && [[ "$(docker inspect -f '{{.State.Running}}' "${container_id}" 2>/dev/null || true)" == "true" ]]
 }
 
+start_compose_service() {
+  local mode="${1:-headless}"
+  if compose_service_running; then
+    return 0
+  fi
+
+  case "${mode}" in
+    gui)
+      enable_gui_runtime
+      ;;
+    headless)
+      ;;
+    *)
+      echo "Unsupported compose service mode: ${mode}" >&2
+      exit 1
+      ;;
+  esac
+
+  docker_compose up -d "${ISAACLAB_SERVICE_NAME}"
+}
+
 ensure_compose_service_running() {
   if ! compose_service_running; then
     echo "Persistent container '${ISAACLAB_SERVICE_NAME}' is not running. Start it with ./scripts/docker_up.sh or ./scripts/docker_up.sh gui." >&2

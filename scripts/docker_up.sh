@@ -11,7 +11,6 @@ case "${MODE}" in
     ;;
   gui)
     shift || true
-    enable_gui_runtime
     ;;
   *)
     echo "Usage: ./scripts/docker_up.sh [headless|gui]" >&2
@@ -19,5 +18,5 @@ case "${MODE}" in
     ;;
 esac
 
-docker_compose up -d "${ISAACLAB_SERVICE_NAME}"
+start_compose_service "${MODE}"
 docker_compose ps "${ISAACLAB_SERVICE_NAME}"
